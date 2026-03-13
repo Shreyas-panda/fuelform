@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: rgb(2, 6, 23); /* slate-950 */
+    color: rgb(226, 232, 240); /* slate-200 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgb(15, 23, 42);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(51, 65, 85);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(71, 85, 105);
+  }
+
+  /* Number input: hide arrows */
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+}
+
+/* ─── Print styles ─────────────────────────────────────────────────── */
+@media print {
+  body {
+    background: white !important;
+    color: #111 !important;
+    font-size: 12pt;
+  }
+
+  /* Force light backgrounds on dark cards */
+  [class*="bg-slate"],
+  [class*="bg-emerald"],
+  [class*="bg-cyan"] {
+    background: white !important;
+    border-color: #e2e8f0 !important;
+  }
+
+  /* Ensure text is readable */
+  [class*="text-slate-4"],
+  [class*="text-slate-5"],
+  [class*="text-slate-6"] {
+    color: #374151 !important;
+  }
+
+  [class*="text-slate-1"],
+  [class*="text-slate-2"],
+  [class*="text-slate-3"] {
+    color: #111 !important;
+  }
+
+  [class*="text-emerald"] {
+    color: #065f46 !important;
+  }
+
+  /* Remove fixed header and ambient glow */
+  header,
+  .print\:hidden,
+  [class*="blur"],
+  [class*="pointer-events-none"] {
+    display: none !important;
+  }
+
+  /* Remove shadows */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Make gradients print as solid */
+  .bg-gradient-to-r,
+  .bg-gradient-to-b,
+  .bg-gradient-to-br {
+    background: #065f46 !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+  }
+
+  /* Expand collapsible sections */
+  [class*="overflow-hidden"] {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  /* Page breaks */
+  .meal-card {
+    page-break-inside: avoid;
+  }
+}
