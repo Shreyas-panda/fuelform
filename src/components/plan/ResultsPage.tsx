@@ -9,7 +9,136 @@ import { WorkoutDisplay } from './WorkoutDisplay'
 import { MonthlyPlanDisplay } from './MonthlyPlanDisplay'
 import { useDietStore } from '@/store/useDietStore'
 import { clsx } from 'clsx'
-import type { ResultTab } from '@/types'
+import type { DietPlan, ResultTab } from '@/types'
+
+function printDietPlan(plan: DietPlan) {
+  const { userProfile, goal, bmiResult, dailyTargetMacros, meals, supplementStack, hydrationTips, generalTips, weeklyVariationNote } = plan
+
+  const mealsHtml = meals.map((meal) => `
+    <div class="meal">
+      <div class="meal-header">
+        <strong>${meal.name}</strong>
+        <span class="meal-time">${meal.time}</span>
+        <span class="meal-kcal">${meal.totalCalories} kcal</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Ingredient</th><th>Qty</th><th>Kcal</th><th>Protein</th><th>Carbs</th><th>Fat</th></tr>
+        </thead>
+        <tbody>
+          ${meal.ingredients.map((ing) => `
+            <tr>
+              <td>${ing.name}</td>
+              <td>${ing.quantity}</td>
+              <td>${ing.calories}</td>
+              <td>${ing.protein}g</td>
+              <td>${ing.carbs}g</td>
+              <td>${ing.fat}g</td>
+            </tr>`).join('')}
+        </tbody>
+        <tfoot>
+          <tr class="totals-row">
+            <td colspan="2"><strong>Meal Total</strong></td>
+            <td><strong>${meal.totalCalories}</strong></td>
+            <td><strong>${meal.totalProtein}g</strong></td>
+            <td><strong>${meal.totalCarbs}g</strong></td>
+            <td><strong>${meal.totalFat}g</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+      ${meal.preparationNotes ? `<p class="prep-notes">${meal.preparationNotes}</p>` : ''}
+    </div>`).join('')
+
+  const supplementsHtml = supplementStack.length > 0
+    ? `<div class="section"><h3>Supplement Stack</h3><ul>${supplementStack.map((s) => `<li>${s}</li>`).join('')}</ul></div>`
+    : ''
+
+  const hydrationHtml = hydrationTips.length > 0
+    ? `<div class="section"><h3>Hydration Tips</h3><ul>${hydrationTips.map((t) => `<li>${t}</li>`).join('')}</ul></div>`
+    : ''
+
+  const tipsHtml = generalTips.length > 0
+    ? `<div class="section"><h3>Pro Tips</h3><ul>${generalTips.map((t) => `<li>${t}</li>`).join('')}</ul></div>`
+    : ''
+
+  const variationHtml = weeklyVariationNote
+    ? `<div class="section"><h3>Training vs Rest Day Adjustment</h3><p>${weeklyVariationNote}</p></div>`
+    : ''
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>FuelForm — ${userProfile.name}'s ${goal.type} Plan</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11pt; color: #111; background: #fff; padding: 24px 32px; }
+    h1 { font-size: 20pt; color: #065f46; margin-bottom: 4px; }
+    h2 { font-size: 13pt; color: #111; margin: 16px 0 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+    h3 { font-size: 11pt; color: #065f46; margin-bottom: 6px; }
+    .subtitle { color: #555; font-size: 10pt; margin-bottom: 12px; }
+    .badges { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .badge { padding: 3px 10px; border-radius: 20px; font-size: 9pt; font-weight: 600; background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .macro-row { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+    .macro-box { padding: 10px 16px; border-radius: 8px; border: 1px solid #e2e8f0; min-width: 100px; text-align: center; }
+    .macro-box .val { font-size: 16pt; font-weight: 800; color: #065f46; }
+    .macro-box .label { font-size: 8pt; color: #555; text-transform: uppercase; letter-spacing: 0.05em; }
+    .meal { margin-bottom: 20px; page-break-inside: avoid; }
+    .meal-header { display: flex; gap: 12px; align-items: baseline; margin-bottom: 6px; }
+    .meal-header strong { font-size: 12pt; color: #111; }
+    .meal-time { color: #555; font-size: 9pt; }
+    .meal-kcal { margin-left: auto; font-weight: 700; color: #065f46; font-size: 10pt; }
+    table { width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 6px; }
+    th { background: #f1f5f9; color: #374151; text-align: left; padding: 5px 8px; font-weight: 600; border: 1px solid #e2e8f0; }
+    td { padding: 4px 8px; border: 1px solid #e2e8f0; color: #374151; }
+    .totals-row td { background: #f8fafc; font-weight: 600; }
+    .prep-notes { font-size: 9pt; color: #555; font-style: italic; margin-top: 4px; }
+    .section { margin-bottom: 16px; page-break-inside: avoid; }
+    .section ul { padding-left: 18px; }
+    .section li { color: #374151; font-size: 10pt; margin-bottom: 3px; }
+    .footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 8pt; color: #999; text-align: center; }
+    @media print { body { padding: 0; } }
+  </style>
+</head>
+<body>
+  <h1>FuelForm — ${userProfile.name}'s Plan</h1>
+  <p class="subtitle">${goal.type.charAt(0).toUpperCase() + goal.type.slice(1)} Plan · Generated ${new Date().toLocaleDateString()}</p>
+  <div class="badges">
+    <span class="badge">${goal.type.toUpperCase()}</span>
+    <span class="badge">BMI ${bmiResult.bmi} · ${bmiResult.category}</span>
+    <span class="badge">${dailyTargetMacros.calories} kcal/day</span>
+    <span class="badge">${userProfile.weightKg}kg · ${userProfile.heightCm}cm</span>
+  </div>
+
+  <h2>Daily Macro Targets</h2>
+  <div class="macro-row">
+    <div class="macro-box"><div class="val">${dailyTargetMacros.calories}</div><div class="label">Calories</div></div>
+    <div class="macro-box"><div class="val">${dailyTargetMacros.protein}g</div><div class="label">Protein</div></div>
+    <div class="macro-box"><div class="val">${dailyTargetMacros.carbs}g</div><div class="label">Carbs</div></div>
+    <div class="macro-box"><div class="val">${dailyTargetMacros.fat}g</div><div class="label">Fat</div></div>
+    <div class="macro-box"><div class="val">${dailyTargetMacros.fiber}g</div><div class="label">Fiber</div></div>
+    <div class="macro-box"><div class="val">${dailyTargetMacros.water}L</div><div class="label">Water</div></div>
+  </div>
+
+  <h2>Meal Plan (${meals.length} Meals)</h2>
+  ${mealsHtml}
+
+  ${supplementsHtml}
+  ${hydrationHtml}
+  ${tipsHtml}
+  ${variationHtml}
+
+  <div class="footer">Generated by FuelForm · fuelform.vercel.app · Powered by Llama 3.3 70B via Groq</div>
+</body>
+</html>`
+
+  const win = window.open('', '_blank')
+  if (!win) return
+  win.document.write(html)
+  win.document.close()
+  win.focus()
+  setTimeout(() => { win.print() }, 400)
+}
 
 const GOAL_BADGE: Record<string, 'blue' | 'rose' | 'emerald'> = {
   bulking: 'blue',
@@ -66,7 +195,7 @@ export function ResultsPage() {
           </div>
 
           <div className="flex gap-2 print:hidden">
-            <Button variant="secondary" size="sm" onClick={() => window.print()}>
+            <Button variant="secondary" size="sm" onClick={() => printDietPlan(dietPlan)}>
               <Printer className="h-4 w-4" /> Print
             </Button>
             <Button variant="ghost" size="sm" onClick={resetAll}>
