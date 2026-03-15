@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card'
 import { MacroSummary } from './MacroSummary'
 import { MealCard } from './MealCard'
 import { WorkoutDisplay } from './WorkoutDisplay'
+import { MonthlyPlanDisplay } from './MonthlyPlanDisplay'
 import { useDietStore } from '@/store/useDietStore'
 import { clsx } from 'clsx'
 import type { ResultTab } from '@/types'
@@ -26,6 +27,7 @@ const BMI_BADGE: Record<string, 'blue' | 'emerald' | 'amber' | 'red'> = {
 const TABS: { id: ResultTab; label: string; icon: React.ReactNode }[] = [
   { id: 'diet', label: 'Diet Plan', icon: <Utensils className="h-4 w-4" /> },
   { id: 'workout', label: 'Workout Plan', icon: <Dumbbell className="h-4 w-4" /> },
+  { id: 'monthly', label: 'Monthly Plan', icon: <CalendarDays className="h-4 w-4" /> },
 ]
 
 export function ResultsPage() {
@@ -94,7 +96,7 @@ export function ResultsPage() {
       </div>
 
       {/* ── Tab content ──────────────────────────────────────────────── */}
-      {resultTab === 'diet' ? (
+      {resultTab === 'diet' && (
         <motion.div
           key="diet"
           initial={{ opacity: 0, y: 12 }}
@@ -172,7 +174,9 @@ export function ResultsPage() {
             )}
           </div>
         </motion.div>
-      ) : (
+      )}
+
+      {resultTab === 'workout' && (
         <motion.div
           key="workout"
           initial={{ opacity: 0, y: 12 }}
@@ -180,6 +184,17 @@ export function ResultsPage() {
           transition={{ duration: 0.4 }}
         >
           <WorkoutDisplay />
+        </motion.div>
+      )}
+
+      {resultTab === 'monthly' && (
+        <motion.div
+          key="monthly"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <MonthlyPlanDisplay />
         </motion.div>
       )}
 

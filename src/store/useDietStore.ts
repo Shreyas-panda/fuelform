@@ -5,13 +5,14 @@ import type {
   BMIResult,
   DietPlan,
   FoodPreferences,
+  MonthlyPlan,
   ResultTab,
   UserGoal,
   UserProfile,
   WizardStep,
   WorkoutPlan,
 } from '@/types'
-import { generateDietPlan } from '@/services/groqService'
+import { generateDietPlan, generateMonthlyPlan } from '@/services/groqService'
 import { generateWorkoutPlan } from '@/services/workoutService'
 
 interface DietStore {
@@ -45,12 +46,15 @@ interface DietStore {
   // Generation
   status: AppStatus
   workoutStatus: AppStatus
+  monthlyStatus: AppStatus
   errorMessage: string | null
   dietPlan: DietPlan | null
   workoutPlan: WorkoutPlan | null
+  monthlyPlan: MonthlyPlan | null
 
   generatePlan: () => Promise<void>
   generateWorkout: () => Promise<void>
+  generateMonthly: () => Promise<void>
   resetAll: () => void
 }
 
@@ -65,9 +69,11 @@ export const useDietStore = create<DietStore>((set, get) => ({
   preferences: {},
   status: 'idle',
   workoutStatus: 'idle',
+  monthlyStatus: 'idle',
   errorMessage: null,
   dietPlan: null,
   workoutPlan: null,
+  monthlyPlan: null,
 
   setAppView: (appView) => set({ appView }),
   setResultTab: (resultTab) => set({ resultTab }),
@@ -122,6 +128,25 @@ export const useDietStore = create<DietStore>((set, get) => ({
     }
   },
 
+  generateMonthly: async () => {
+    const { userProfile, bmiResult, userGoal, preferences } = get()
+    set({ monthlyStatus: 'generating' })
+    try {
+      const plan = await generateMonthlyPlan(
+        userProfile as UserProfile,
+        bmiResult!,
+        userGoal!,
+        preferences as FoodPreferences,
+      )
+      set({ monthlyStatus: 'success', monthlyPlan: plan })
+    } catch (err) {
+      set({
+        monthlyStatus: 'error',
+        errorMessage: err instanceof Error ? err.message : 'Monthly plan generation failed.',
+      })
+    }
+  },
+
   resetAll: () =>
     set({
       appView: 'hero',
@@ -133,8 +158,10 @@ export const useDietStore = create<DietStore>((set, get) => ({
       preferences: {},
       status: 'idle',
       workoutStatus: 'idle',
+      monthlyStatus: 'idle',
       errorMessage: null,
       dietPlan: null,
       workoutPlan: null,
+      monthlyPlan: null,
     }),
 }))

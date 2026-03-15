@@ -135,9 +135,32 @@ export interface WorkoutPlan {
   generalAdvice: string
 }
 
+// ─── Monthly Plan Models ──────────────────────────────────────────────────────
+
+export interface WeekMeal {
+  name: string    // e.g. "Breakfast"
+  foods: string   // e.g. "Masala oats with sprouts and mint chutney"
+  kcal: number
+}
+
+export interface MonthlyWeek {
+  week: number
+  theme: string        // e.g. "Foundation Week"
+  focus: string        // what changes and why
+  meals: WeekMeal[]    // one sample day's full meal schedule
+  keyChanges: string[] // bullet list of differences vs previous week
+}
+
+export interface MonthlyPlan {
+  id: string
+  generatedAt: string
+  weeks: MonthlyWeek[]
+  monthlyTips: string[]
+}
+
 // ─── App State ────────────────────────────────────────────────────────────────
 
 export type WizardStep = 1 | 2 | 3 | 4
 export type AppStatus = 'idle' | 'generating' | 'success' | 'error'
 export type AppView = 'hero' | 'wizard' | 'results' | 'learn'
-export type ResultTab = 'diet' | 'workout'
+export type ResultTab = 'diet' | 'workout' | 'monthly'
