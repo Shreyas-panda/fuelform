@@ -164,10 +164,13 @@ export function GoalTracker() {
     return s
   })()
 
-  async function handleRegenerate() {
+  function handleRegenerate() {
+    // Clear today's tracker from localStorage so fresh plan starts with clean slate
+    localStorage.removeItem(`fuelform_tracker_${todayKey()}`)
+    setTodayTracker({ meals: {}, exercises: {} })
     setShowCelebration(false)
     setAppView('wizard')
-    await generatePlan()
+    generatePlan()
   }
 
   return (
@@ -227,12 +230,13 @@ export function GoalTracker() {
                     {completedMeals} meals eaten · {completedExercises > 0 ? `${completedExercises} exercises done` : 'Keep going!'}
                   </div>
                 </div>
+                <p className="text-xs text-slate-500">Tomorrow same plan continues — or regenerate for variety</p>
                 <div className="flex flex-col sm:flex-row gap-3 w-full">
                   <Button variant="secondary" onClick={() => setShowCelebration(false)} className="flex-1">
-                    Keep This Plan
+                    Continue with This Plan
                   </Button>
                   <Button onClick={handleRegenerate} className="flex-1">
-                    <RefreshCw className="h-4 w-4" /> Get a Fresh Plan
+                    <RefreshCw className="h-4 w-4" /> Regenerate a New Plan
                   </Button>
                 </div>
               </div>

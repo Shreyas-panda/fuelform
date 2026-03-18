@@ -176,7 +176,7 @@ export function ResultsPage() {
       className="w-full max-w-3xl mx-auto flex flex-col gap-6 print:gap-4"
     >
       {/* ── Plan hero header ─────────────────────────────────────────── */}
-      <Card className="p-6 bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-slate-700/60 print:border-none">
+      <Card className="p-6 bg-gradient-to-br from-slate-800/90 via-slate-800/70 to-slate-900/90 border-slate-700/50 print:border-none overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div>
             <p className="text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-1">Your Personalised Plan</p>
@@ -228,20 +228,21 @@ export function ResultsPage() {
       </div>
 
       {/* ── Tab switcher ─────────────────────────────────────────────── */}
-      <div className="flex gap-1 p-1 rounded-2xl bg-slate-900/60 border border-slate-800/60 print:hidden">
+      <div className="flex gap-1 p-1.5 rounded-2xl bg-slate-900/80 border border-slate-800/60 print:hidden overflow-x-auto">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setResultTab(tab.id)}
             className={clsx(
-              'flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300',
+              'flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 whitespace-nowrap min-w-0',
               resultTab === tab.id
-                ? 'bg-emerald-500 text-slate-900 shadow-lg shadow-emerald-500/20'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50',
+                ? 'bg-gradient-to-b from-emerald-500 to-emerald-600 text-slate-900 shadow-lg shadow-emerald-500/30'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60',
             )}
           >
             {tab.icon}
-            {tab.label}
+            <span className="hidden sm:inline">{tab.label}</span>
+            <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
           </button>
         ))}
       </div>

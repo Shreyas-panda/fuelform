@@ -135,7 +135,7 @@ export function HeroPage() {
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.15 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-6"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-6 shadow-lg shadow-emerald-500/10"
         >
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           AI-Powered · 100% Free · No Signup
@@ -223,16 +223,16 @@ export function HeroPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7, duration: 0.5 }}
-          className="flex items-center gap-6 sm:gap-10 mb-16 text-center"
+          className="flex items-center divide-x divide-slate-800 mb-16 text-center"
         >
           {[
             { value: '5', label: 'Cuisine Types' },
             { value: '4-Week', label: 'Monthly Plans' },
             { value: '100%', label: 'Free, No Signup' },
           ].map((stat) => (
-            <div key={stat.label}>
-              <div className="text-emerald-400 font-black text-xl sm:text-2xl">{stat.value}</div>
-              <div className="text-slate-600 text-xs mt-0.5">{stat.label}</div>
+            <div key={stat.label} className="flex flex-col items-center px-4 sm:px-6">
+              <div className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">{stat.value}</div>
+              <div className="text-slate-500 text-xs mt-1 font-medium">{stat.label}</div>
             </div>
           ))}
         </motion.div>
@@ -252,12 +252,14 @@ export function HeroPage() {
             <h2 className="text-3xl sm:text-4xl font-black text-slate-100">How It Works</h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+          <div className="relative grid grid-cols-1 sm:grid-cols-4 gap-6">
+            {/* Connecting line on desktop */}
+            <div className="absolute hidden sm:block top-8 left-[15%] right-[15%] h-px bg-gradient-to-r from-emerald-500/10 via-emerald-500/40 to-emerald-500/10 pointer-events-none" />
             {[
-              { step: '01', title: 'Enter Your Stats', desc: 'Height, weight, age, gender and activity level.' },
-              { step: '02', title: 'Choose Your Goal', desc: 'Bulk, shred, or maintain — we pre-select based on your BMI.' },
-              { step: '03', title: 'Set Preferences', desc: 'Diet type, cuisine, allergies and meals per day.' },
-              { step: '04', title: 'Get Your Plan', desc: 'Diet plan with exact macros, workout split with YouTube guides, 4-week monthly rotation, and a daily goal tracker.' },
+              { step: 1, title: 'Enter Your Stats', desc: 'Height, weight, age, gender and activity level.' },
+              { step: 2, title: 'Choose Your Goal', desc: 'Bulk, shred, or maintain — we pre-select based on your BMI.' },
+              { step: 3, title: 'Set Preferences', desc: 'Diet type, cuisine, allergies and meals per day.' },
+              { step: 4, title: 'Get Your Plan', desc: 'Diet plan with exact macros, workout split with YouTube guides, 4-week monthly rotation, and a daily goal tracker.' },
             ].map((item, i) => (
               <motion.div
                 key={item.step}
@@ -265,11 +267,15 @@ export function HeroPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.4 }}
-                className="flex flex-col gap-3 p-5 rounded-2xl bg-slate-900/60 border border-slate-800/60"
+                className="flex flex-col items-center sm:items-start gap-4 p-6 rounded-2xl bg-slate-900/60 border border-slate-800/60 hover:border-slate-700/60 transition-colors text-center sm:text-left"
               >
-                <span className="text-4xl font-black text-emerald-500/20">{item.step}</span>
-                <div className="text-slate-100 font-bold text-sm">{item.title}</div>
-                <div className="text-slate-500 text-xs leading-relaxed">{item.desc}</div>
+                <div className="w-14 h-14 rounded-full bg-slate-900 border-2 border-emerald-500/40 flex items-center justify-center text-emerald-400 font-black text-xl z-10 shadow-lg shadow-emerald-500/10 flex-shrink-0">
+                  {item.step}
+                </div>
+                <div>
+                  <div className="text-slate-100 font-bold text-sm mb-1.5">{item.title}</div>
+                  <div className="text-slate-500 text-xs leading-relaxed">{item.desc}</div>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -310,13 +316,14 @@ export function HeroPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.4 }}
-                className="flex flex-col gap-3 p-5 rounded-2xl bg-slate-900/60 border border-slate-800/60 hover:border-emerald-500/30 hover:bg-slate-800/50 transition-all duration-300"
+                className="relative flex flex-col gap-4 p-6 rounded-2xl bg-slate-900/70 border border-slate-800/60 hover:border-slate-700/80 transition-all duration-300 group overflow-hidden cursor-default"
               >
-                <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 w-fit">
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/5 border border-emerald-500/25 text-emerald-400 w-fit">
                   {f.icon}
                 </div>
                 <div>
-                  <div className="text-slate-100 font-semibold text-sm mb-1">{f.title}</div>
+                  <div className="text-slate-100 font-bold text-sm mb-1.5">{f.title}</div>
                   <div className="text-slate-500 text-xs leading-relaxed">{f.desc}</div>
                 </div>
               </motion.div>
@@ -326,12 +333,15 @@ export function HeroPage() {
       </section>
 
       {/* ── Footer ───────────────────────────────────────────────────── */}
-      <footer className="relative z-10 bg-slate-950 border-t border-slate-800/60 px-6 py-8 text-center">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <Dumbbell className="h-4 w-4 text-emerald-400" />
-          <span className="text-slate-300 font-bold">Fuel<span className="text-emerald-400">Form</span></span>
+      <footer className="relative z-10 bg-slate-950 border-t border-slate-800/60 px-6 py-10 text-center">
+        <div className="flex items-center justify-center gap-2 mb-3">
+          <div className="p-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30">
+            <Dumbbell className="h-4 w-4 text-emerald-400" />
+          </div>
+          <span className="text-slate-200 font-black text-lg">Fuel<span className="text-emerald-400">Form</span></span>
         </div>
-        <p className="text-slate-600 text-xs">Powered by Llama 3.3 70B via Groq · Free forever · No data stored</p>
+        <p className="text-slate-500 text-xs mb-1">AI-powered diet & workout planner · Built for gym enthusiasts</p>
+        <p className="text-slate-700 text-xs">Free forever · No signup · No data stored · Powered by Llama 3.3 70B</p>
       </footer>
 
     </div>
