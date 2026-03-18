@@ -64,7 +64,7 @@ ${prefs.mealsPerDay <= 2 ? `INTERMITTENT FASTING PROTOCOL: This athlete is follo
 
 ${CUISINE_GUIDANCE[prefs.cuisineType]}
 
-${prefs.flexMeals > 0 ? `FLEX SWAPS: For each meal, provide exactly ${prefs.flexMeals} alternate meal option(s) in the "alternates" array. Each alternate must: use the SAME cuisine, meet similar macro targets (±15%), and be a completely different meal (different ingredients/dish).` : ''}
+${prefs.flexMeals > 0 ? `FLEX SWAPS: For each meal, provide exactly ${prefs.flexMeals} alternate meal option(s) in the "alternates" array. Each alternate must: use the SAME cuisine, meet similar macro targets (±15%), be a completely different meal (different ingredients/dish), and include a full "ingredients" array with exact gram quantities, calories, protein, carbs and fat per ingredient — same structure as the main meal ingredients.` : ''}
 
 REQUIREMENTS:
 - Every ingredient must have exact quantity in grams (or ml for liquids, or count for whole items like eggs — always include gram equivalent in parentheses e.g. "2 whole (100g)")
@@ -103,7 +103,7 @@ Return this exact JSON structure:
       "totalProtein": <sum>,
       "totalCarbs": <sum>,
       "totalFat": <sum>,
-      "alternates": ${prefs.flexMeals > 0 ? `[${Array.from({ length: prefs.flexMeals }, (_, i) => `{"name": "Alternative ${i + 1}", "foods": "Brief description of alternate meal using same cuisine", "kcal": <number>, "protein": <number>, "carbs": <number>, "fat": <number>}`).join(', ')}]` : '[]'}
+      "alternates": ${prefs.flexMeals > 0 ? `[${Array.from({ length: prefs.flexMeals }, (_, i) => `{"name": "Alternative Meal ${i + 1}", "foods": "Brief description", "ingredients": [{"name": "Ingredient", "quantity": "100g", "calories": 150, "protein": 8, "carbs": 20, "fat": 3}], "kcal": <sum>, "protein": <sum>, "carbs": <sum>, "fat": <sum>}`).join(', ')}]` : '[]'}
     }
   ],
   "supplementStack": ${prefs.includeSupplements ? '["Whey protein 30g post-workout", "Creatine monohydrate 5g daily"]' : '[]'},

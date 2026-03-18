@@ -58,6 +58,7 @@ export interface Ingredient {
 export interface AlternateMeal {
   name: string
   foods: string
+  ingredients: Ingredient[]
   kcal: number
   protein: number
   carbs: number

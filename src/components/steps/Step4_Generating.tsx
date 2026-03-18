@@ -80,7 +80,7 @@ export function Step4_Generating() {
             {MESSAGES[msgIndex]}
           </motion.p>
         </AnimatePresence>
-        <p className="text-slate-600 text-xs mt-3">Powered by Llama 3.3 70B via Groq</p>
+        <p className="text-slate-600 text-xs mt-3">This usually takes 15–20 seconds</p>
       </div>
 
       {/* Progress dots */}

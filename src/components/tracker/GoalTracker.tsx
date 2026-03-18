@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { CheckCircle2, Circle, CalendarDays, TrendingUp, Utensils, Dumbbell, Lock } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  CheckCircle2, Circle, CalendarDays, TrendingUp, Utensils,
+  Dumbbell, RefreshCw, Trophy, ChevronDown,
+} from 'lucide-react'
 import { Card } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
 import { useDietStore } from '@/store/useDietStore'
 import { clsx } from 'clsx'
 
@@ -14,13 +18,13 @@ function todayKey(): string {
   return new Date().toISOString().slice(0, 10)
 }
 
-function formatDateKey(offset: number): string {
+function getDateKey(daysAgo: number): string {
   const d = new Date()
-  d.setDate(d.getDate() - offset)
+  d.setDate(d.getDate() - daysAgo)
   return d.toISOString().slice(0, 10)
 }
 
-function formatDayLabel(dateKey: string): string {
+function formatLabel(dateKey: string): string {
   const d = new Date(dateKey + 'T00:00:00')
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -28,6 +32,11 @@ function formatDayLabel(dateKey: string): string {
   if (diff === 0) return 'Today'
   if (diff === 1) return 'Yesterday'
   return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+}
+
+function shortDayLabel(dateKey: string): string {
+  const d = new Date(dateKey + 'T00:00:00')
+  return d.toLocaleDateString('en-US', { weekday: 'short' })
 }
 
 function loadDay(dateKey: string): TrackerDay {
@@ -46,18 +55,14 @@ function ProgressRing({ pct, size = 64, stroke = 5 }: { pct: number; size?: numb
   const r = (size - stroke * 2) / 2
   const circ = 2 * Math.PI * r
   const dash = (pct / 100) * circ
+  const color = pct >= 100 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#3b82f6'
   return (
     <svg width={size} height={size} className="-rotate-90">
       <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#1e293b" strokeWidth={stroke} />
       <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={r}
-        fill="none"
-        stroke={pct >= 100 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#3b82f6'}
-        strokeWidth={stroke}
-        strokeDasharray={`${dash} ${circ}`}
-        strokeLinecap="round"
+        cx={size / 2} cy={size / 2} r={r} fill="none"
+        stroke={color} strokeWidth={stroke}
+        strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
         style={{ transition: 'stroke-dasharray 0.5s ease' }}
       />
     </svg>
@@ -65,65 +70,105 @@ function ProgressRing({ pct, size = 64, stroke = 5 }: { pct: number; size?: numb
 }
 
 export function GoalTracker() {
-  const { dietPlan, workoutPlan, workoutStatus } = useDietStore()
+  const { dietPlan, workoutPlan, workoutStatus, generatePlan, setAppView } = useDietStore()
   const [view, setView] = useState<'daily' | 'weekly'>('daily')
-  const [tracker, setTracker] = useState<TrackerDay>(() => loadDay(todayKey()))
+  const [todayTracker, setTodayTracker] = useState<TrackerDay>(() => loadDay(todayKey()))
+  const [expandedDay, setExpandedDay] = useState<string | null>(null)
+  const [weekTrackers, setWeekTrackers] = useState<Record<string, TrackerDay>>({})
+  const [showCelebration, setShowCelebration] = useState(false)
+  const [prevPct, setPrevPct] = useState(0)
 
+  // Persist today's tracker
   useEffect(() => {
-    saveDay(todayKey(), tracker)
-  }, [tracker])
+    saveDay(todayKey(), todayTracker)
+  }, [todayTracker])
+
+  // Load week trackers when weekly view opens
+  useEffect(() => {
+    if (view === 'weekly') {
+      const data: Record<string, TrackerDay> = {}
+      for (let i = 0; i < 7; i++) {
+        const key = getDateKey(i)
+        data[key] = loadDay(key)
+      }
+      setWeekTrackers(data)
+    }
+  }, [view])
 
   if (!dietPlan) return null
 
   const { meals } = dietPlan
-
-  // Get today's workout day (cycle through workout days)
   const todayWorkoutDay = workoutPlan?.days.find((d) => !d.isRestDay) ?? null
-
   const totalMeals = meals.length
-  const completedMeals = meals.filter((m) => tracker.meals[m.id]).length
-
+  const completedMeals = meals.filter((m) => todayTracker.meals[m.id]).length
   const totalExercises = todayWorkoutDay?.exercises.length ?? 0
-  const completedExercises = workoutPlan
-    ? (todayWorkoutDay?.exercises.filter((_, i) => tracker.exercises[`today_${i}`]) ?? []).length
-    : 0
-
+  const completedExercises = todayWorkoutDay?.exercises.filter((_, i) => todayTracker.exercises[`today_${i}`]).length ?? 0
   const totalItems = totalMeals + totalExercises
   const completedItems = completedMeals + completedExercises
   const overallPct = totalItems === 0 ? 0 : Math.round((completedItems / totalItems) * 100)
 
+  // Trigger celebration when 100% is first reached
+  useEffect(() => {
+    if (overallPct === 100 && prevPct < 100) {
+      setShowCelebration(true)
+    }
+    setPrevPct(overallPct)
+  }, [overallPct])
+
   function toggleMeal(id: string) {
-    setTracker((prev) => ({
-      ...prev,
-      meals: { ...prev.meals, [id]: !prev.meals[id] },
-    }))
+    setTodayTracker((prev) => ({ ...prev, meals: { ...prev.meals, [id]: !prev.meals[id] } }))
   }
 
   function toggleExercise(key: string) {
-    setTracker((prev) => ({
-      ...prev,
-      exercises: { ...prev.exercises, [key]: !prev.exercises[key] },
-    }))
+    setTodayTracker((prev) => ({ ...prev, exercises: { ...prev.exercises, [key]: !prev.exercises[key] } }))
   }
 
-  // Weekly data: last 7 days
-  const weekData = Array.from({ length: 7 }, (_, i) => {
-    const key = formatDateKey(i)
-    const day = loadDay(key)
-    const mTotal = meals.length
-    const mDone = Object.values(day.meals).filter(Boolean).length
-    const eDone = Object.values(day.exercises).filter(Boolean).length
-    const eTotal = todayWorkoutDay?.exercises.length ?? 0
-    const total = mTotal + (i === 0 ? eTotal : 0)
-    const done = mDone + (i === 0 ? eDone : 0)
+  function toggleWeekMeal(dateKey: string, mealId: string) {
+    const current = weekTrackers[dateKey] ?? { meals: {}, exercises: {} }
+    const updated = { ...current, meals: { ...current.meals, [mealId]: !current.meals[mealId] } }
+    saveDay(dateKey, updated)
+    setWeekTrackers((prev) => ({ ...prev, [dateKey]: updated }))
+    if (dateKey === todayKey()) setTodayTracker(updated)
+  }
+
+  // Build 7-day week data
+  const weekDays = Array.from({ length: 7 }, (_, i) => {
+    const key = getDateKey(6 - i) // oldest first
+    const tracker = weekTrackers[key] ?? loadDay(key)
+    const mDone = meals.filter((m) => tracker.meals[m.id]).length
+    const eDone = Object.values(tracker.exercises).filter(Boolean).length
+    const eTotal = i === 6 ? totalExercises : 0 // only count exercises for today
+    const total = totalMeals + eTotal
+    const done = mDone + (i === 6 ? eDone : 0)
     return {
       key,
-      label: formatDayLabel(key),
+      label: formatLabel(key),
+      short: shortDayLabel(key),
       pct: total === 0 ? 0 : Math.round((done / total) * 100),
       mealsCompleted: mDone,
-      mealsTotal: mTotal,
+      mealsTotal: totalMeals,
+      isToday: key === todayKey(),
+      isFuture: false,
     }
-  }).reverse()
+  })
+
+  // Weekly summary stats
+  const weeklyMealsCompleted = weekDays.reduce((s, d) => s + d.mealsCompleted, 0)
+  const weeklyMealsTotal = weekDays.reduce((s, d) => s + d.mealsTotal, 0)
+  const streak = (() => {
+    let s = 0
+    for (let i = weekDays.length - 1; i >= 0; i--) {
+      if (weekDays[i].pct >= 100) s++
+      else break
+    }
+    return s
+  })()
+
+  async function handleRegenerate() {
+    setShowCelebration(false)
+    setAppView('wizard')
+    await generatePlan()
+  }
 
   return (
     <motion.div
@@ -135,18 +180,20 @@ export function GoalTracker() {
       {/* Beta badge */}
       <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
-        Goal Tracker — Free during beta. Track your daily meals and workouts, tick off what you complete.
+        Goal Tracker — Free during beta. Tick off meals and workouts as you complete them each day.
       </div>
 
       {/* Overall progress card */}
-      <Card className="p-5">
+      <Card className={clsx('p-5 transition-all duration-500', overallPct === 100 && 'border-emerald-500/40 bg-emerald-500/5')}>
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center flex-shrink-0">
             <ProgressRing pct={overallPct} size={72} stroke={6} />
             <span className="absolute text-sm font-black text-slate-100">{overallPct}%</span>
           </div>
-          <div>
-            <div className="text-slate-100 font-bold text-lg">Today's Progress</div>
+          <div className="flex-1">
+            <div className="text-slate-100 font-bold text-lg">
+              {overallPct === 100 ? "Today's goal crushed! 🎉" : "Today's Progress"}
+            </div>
             <div className="text-slate-400 text-sm mt-0.5">
               {completedItems} of {totalItems} goals completed
             </div>
@@ -157,11 +204,42 @@ export function GoalTracker() {
               )}
             </div>
           </div>
-          {overallPct === 100 && (
-            <div className="ml-auto text-2xl">🎉</div>
-          )}
         </div>
       </Card>
+
+      {/* Goal hit celebration */}
+      <AnimatePresence>
+        {showCelebration && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -8 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Card className="p-6 border-emerald-500/40 bg-gradient-to-br from-emerald-500/10 to-cyan-500/5">
+              <div className="flex flex-col items-center text-center gap-4">
+                <div className="p-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30">
+                  <Trophy className="h-8 w-8 text-emerald-400" />
+                </div>
+                <div>
+                  <div className="text-xl font-black text-slate-100">You crushed today's goal!</div>
+                  <div className="text-slate-400 text-sm mt-1">
+                    {completedMeals} meals eaten · {completedExercises > 0 ? `${completedExercises} exercises done` : 'Keep going!'}
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full">
+                  <Button variant="secondary" onClick={() => setShowCelebration(false)} className="flex-1">
+                    Keep This Plan
+                  </Button>
+                  <Button onClick={handleRegenerate} className="flex-1">
+                    <RefreshCw className="h-4 w-4" /> Get a Fresh Plan
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* View toggle */}
       <div className="flex gap-1 p-1 rounded-2xl bg-slate-900/60 border border-slate-800/60">
@@ -177,48 +255,41 @@ export function GoalTracker() {
             )}
           >
             {v === 'daily' ? <Utensils className="h-3.5 w-3.5" /> : <CalendarDays className="h-3.5 w-3.5" />}
-            {v.charAt(0).toUpperCase() + v.slice(1)}
+            {v === 'daily' ? 'Daily' : 'Weekly'}
           </button>
         ))}
       </div>
 
-      {/* Daily view */}
+      {/* ── Daily View ─────────────────────────────────────────── */}
       {view === 'daily' && (
         <div className="flex flex-col gap-4">
-          {/* Meals checklist */}
           <Card className="p-5 flex flex-col gap-3">
             <h3 className="text-slate-200 font-bold text-sm flex items-center gap-2">
               <Utensils className="h-4 w-4 text-emerald-400" /> Meals
             </h3>
             {meals.map((meal) => {
-              const done = !!tracker.meals[meal.id]
+              const done = !!todayTracker.meals[meal.id]
               return (
                 <button
                   key={meal.id}
                   onClick={() => toggleMeal(meal.id)}
                   className={clsx(
                     'flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 text-left w-full',
-                    done
-                      ? 'border-emerald-500/30 bg-emerald-500/8'
-                      : 'border-slate-700/60 bg-slate-900/40 hover:border-slate-600',
+                    done ? 'border-emerald-500/30 bg-emerald-500/8' : 'border-slate-700/60 bg-slate-900/40 hover:border-slate-600',
                   )}
                 >
                   {done
                     ? <CheckCircle2 className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-                    : <Circle className="h-5 w-5 text-slate-600 flex-shrink-0" />
-                  }
+                    : <Circle className="h-5 w-5 text-slate-600 flex-shrink-0" />}
                   <div className="flex-1 min-w-0">
-                    <div className={clsx('text-sm font-semibold', done ? 'line-through text-slate-500' : 'text-slate-200')}>
-                      {meal.name}
-                    </div>
-                    <div className="text-xs text-slate-500">{meal.time} · {meal.totalCalories} kcal</div>
+                    <div className={clsx('text-sm font-semibold', done ? 'line-through text-slate-500' : 'text-slate-200')}>{meal.name}</div>
+                    <div className="text-xs text-slate-500">{meal.time} · {meal.totalCalories} kcal · {meal.totalProtein}g protein</div>
                   </div>
                 </button>
               )
             })}
           </Card>
 
-          {/* Workout checklist */}
           {workoutStatus === 'success' && todayWorkoutDay ? (
             <Card className="p-5 flex flex-col gap-3">
               <h3 className="text-slate-200 font-bold text-sm flex items-center gap-2">
@@ -226,75 +297,126 @@ export function GoalTracker() {
               </h3>
               {todayWorkoutDay.exercises.map((ex, i) => {
                 const key = `today_${i}`
-                const done = !!tracker.exercises[key]
+                const done = !!todayTracker.exercises[key]
                 return (
                   <button
                     key={key}
                     onClick={() => toggleExercise(key)}
                     className={clsx(
                       'flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 text-left w-full',
-                      done
-                        ? 'border-blue-500/30 bg-blue-500/5'
-                        : 'border-slate-700/60 bg-slate-900/40 hover:border-slate-600',
+                      done ? 'border-blue-500/30 bg-blue-500/5' : 'border-slate-700/60 bg-slate-900/40 hover:border-slate-600',
                     )}
                   >
                     {done
                       ? <CheckCircle2 className="h-5 w-5 text-blue-400 flex-shrink-0" />
-                      : <Circle className="h-5 w-5 text-slate-600 flex-shrink-0" />
-                    }
+                      : <Circle className="h-5 w-5 text-slate-600 flex-shrink-0" />}
                     <div className="flex-1 min-w-0">
-                      <div className={clsx('text-sm font-semibold', done ? 'line-through text-slate-500' : 'text-slate-200')}>
-                        {ex.name}
-                      </div>
+                      <div className={clsx('text-sm font-semibold', done ? 'line-through text-slate-500' : 'text-slate-200')}>{ex.name}</div>
                       <div className="text-xs text-slate-500">{ex.sets} sets × {ex.reps} · {ex.muscleGroup}</div>
                     </div>
                   </button>
                 )
               })}
             </Card>
-          ) : workoutStatus !== 'success' ? (
-            <Card className="p-5 flex items-center gap-3 text-slate-500 text-sm">
-              <Dumbbell className="h-4 w-4" />
-              Generate your Workout Plan first to track exercises here.
+          ) : (
+            <Card className="p-4 flex items-center gap-3 text-slate-500 text-sm border-dashed">
+              <Dumbbell className="h-4 w-4 flex-shrink-0" />
+              Go to the Workout Plan tab first to generate your workout, then track it here.
             </Card>
-          ) : null}
+          )}
         </div>
       )}
 
-      {/* Weekly view */}
+      {/* ── Weekly View ─────────────────────────────────────────── */}
       {view === 'weekly' && (
-        <div className="flex flex-col gap-3">
-          <Card className="p-5 flex flex-col gap-4">
-            <h3 className="text-slate-200 font-bold text-sm flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-emerald-400" /> Last 7 Days
-            </h3>
-            {weekData.map((day) => (
-              <div key={day.key} className="flex items-center gap-3">
-                <div className="w-20 text-xs text-slate-400 flex-shrink-0 truncate">{day.label}</div>
-                <div className="flex-1 h-2 rounded-full bg-slate-800 overflow-hidden">
-                  <div
-                    className={clsx(
-                      'h-full rounded-full transition-all duration-500',
-                      day.pct >= 100 ? 'bg-emerald-500' : day.pct >= 50 ? 'bg-amber-400' : 'bg-slate-600',
-                    )}
-                    style={{ width: `${day.pct}%` }}
-                  />
-                </div>
-                <div className="w-10 text-xs text-right font-bold text-slate-400 flex-shrink-0">{day.pct}%</div>
-                <div className="w-14 text-xs text-right text-slate-600 flex-shrink-0">{day.mealsCompleted}/{day.mealsTotal} meals</div>
-              </div>
-            ))}
-          </Card>
+        <div className="flex flex-col gap-4">
+          {/* Weekly summary stats */}
+          <div className="grid grid-cols-3 gap-3">
+            <Card className="p-4 text-center">
+              <div className="text-2xl font-black text-emerald-400">{weeklyMealsCompleted}</div>
+              <div className="text-xs text-slate-500 mt-0.5">Meals this week</div>
+              <div className="text-xs text-slate-600 mt-0.5">of {weeklyMealsTotal}</div>
+            </Card>
+            <Card className="p-4 text-center">
+              <div className="text-2xl font-black text-amber-400">{streak}</div>
+              <div className="text-xs text-slate-500 mt-0.5">Day streak</div>
+              <div className="text-xs text-slate-600 mt-0.5">100% days</div>
+            </Card>
+            <Card className="p-4 text-center">
+              <div className="text-2xl font-black text-blue-400">{weekDays.filter((d) => d.pct > 0).length}</div>
+              <div className="text-xs text-slate-500 mt-0.5">Active days</div>
+              <div className="text-xs text-slate-600 mt-0.5">this week</div>
+            </Card>
+          </div>
 
-          {/* Premium teaser */}
-          <Card className="p-5 border-dashed border-slate-700/60 bg-slate-900/20">
-            <div className="flex items-start gap-3">
-              <Lock className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
-              <div>
-                <div className="text-slate-300 font-semibold text-sm">Monthly Goal View — Coming Soon</div>
-                <div className="text-slate-500 text-xs mt-1">30-day calendar heatmap, streak tracking, and milestone badges. Part of the Active plan.</div>
-              </div>
-            </div>
+          {/* 7-day expandable list */}
+          <Card className="p-5 flex flex-col gap-3">
+            <h3 className="text-slate-200 font-bold text-sm flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-emerald-400" /> This Week
+            </h3>
+            {weekDays.map((day) => {
+              const isExpanded = expandedDay === day.key
+              const dayTracker = day.key === todayKey() ? todayTracker : (weekTrackers[day.key] ?? loadDay(day.key))
+              return (
+                <div key={day.key} className={clsx('rounded-xl border overflow-hidden transition-colors', day.isToday ? 'border-emerald-500/30' : 'border-slate-700/50')}>
+                  <button
+                    onClick={() => setExpandedDay(isExpanded ? null : day.key)}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-800/30 transition-colors text-left"
+                  >
+                    <div className="relative flex-shrink-0">
+                      <ProgressRing pct={day.pct} size={36} stroke={3} />
+                      <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-300" style={{ fontSize: '9px' }}>{day.pct}%</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className={clsx('text-sm font-semibold', day.isToday ? 'text-emerald-400' : 'text-slate-200')}>{day.label}</span>
+                        {day.pct === 100 && <span className="text-base">✅</span>}
+                        {day.isToday && <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-semibold">Today</span>}
+                      </div>
+                      <div className="text-xs text-slate-500">{day.mealsCompleted}/{day.mealsTotal} meals completed</div>
+                    </div>
+                    <ChevronDown className={clsx('h-4 w-4 text-slate-600 transition-transform duration-200 flex-shrink-0', isExpanded && 'rotate-180')} />
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-4 pb-4 pt-2 border-t border-slate-700/40 flex flex-col gap-2">
+                          <p className="text-xs text-slate-500 font-medium uppercase tracking-wide mb-1">Meals</p>
+                          {meals.map((meal) => {
+                            const done = !!dayTracker.meals[meal.id]
+                            return (
+                              <button
+                                key={meal.id}
+                                onClick={() => toggleWeekMeal(day.key, meal.id)}
+                                className={clsx(
+                                  'flex items-center gap-3 p-2.5 rounded-lg border transition-all duration-150 text-left w-full',
+                                  done ? 'border-emerald-500/25 bg-emerald-500/6' : 'border-slate-700/40 bg-slate-900/30 hover:border-slate-600',
+                                )}
+                              >
+                                {done
+                                  ? <CheckCircle2 className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                                  : <Circle className="h-4 w-4 text-slate-600 flex-shrink-0" />}
+                                <div className="flex-1 min-w-0">
+                                  <div className={clsx('text-xs font-semibold', done ? 'line-through text-slate-500' : 'text-slate-300')}>{meal.name}</div>
+                                  <div className="text-xs text-slate-600">{meal.time} · {meal.totalCalories} kcal</div>
+                                </div>
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )
+            })}
           </Card>
         </div>
       )}

@@ -6,6 +6,90 @@ import { IngredientList } from './IngredientList'
 import type { Meal } from '@/types'
 import { clsx } from 'clsx'
 
+function FlexSwapsSection({ alternates }: { alternates: NonNullable<Meal['alternates']> }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="text-xs font-semibold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+        <span className="h-px flex-1 bg-slate-700/60" />
+        <span className="flex items-center gap-1.5">⚡ Flex Swaps</span>
+        <span className="h-px flex-1 bg-slate-700/60" />
+      </div>
+      {alternates.map((alt, i) => (
+        <div key={i} className="rounded-xl border border-slate-700/50 overflow-hidden">
+          <button
+            onClick={() => setOpenIndex(openIndex === i ? null : i)}
+            className="w-full flex items-center justify-between px-4 py-3 bg-slate-900/50 hover:bg-slate-800/50 transition-colors text-left"
+          >
+            <div>
+              <div className="text-sm font-semibold text-slate-200">{alt.name || `Option ${i + 1}`}</div>
+              {alt.foods && alt.foods !== alt.name && (
+                <div className="text-xs text-slate-500 mt-0.5">{alt.foods}</div>
+              )}
+            </div>
+            <div className="flex items-center gap-4 flex-shrink-0">
+              <div className="hidden sm:flex items-center gap-3 text-xs">
+                <span className="text-slate-300 font-bold">{alt.kcal} <span className="text-slate-600 font-normal">kcal</span></span>
+                <span className="text-blue-400">{alt.protein}g P</span>
+                <span className="text-amber-400">{alt.carbs}g C</span>
+                <span className="text-rose-400">{alt.fat}g F</span>
+              </div>
+              <ChevronDown className={clsx('h-4 w-4 text-slate-500 transition-transform duration-200', openIndex === i && 'rotate-180')} />
+            </div>
+          </button>
+          {/* Mobile macro strip */}
+          <div className="sm:hidden flex items-center gap-3 px-4 pb-2 text-xs">
+            <span className="text-slate-300 font-bold">{alt.kcal} kcal</span>
+            <span className="text-blue-400">{alt.protein}g P</span>
+            <span className="text-amber-400">{alt.carbs}g C</span>
+            <span className="text-rose-400">{alt.fat}g F</span>
+          </div>
+          <AnimatePresence initial={false}>
+            {openIndex === i && alt.ingredients && alt.ingredients.length > 0 && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.25, ease: 'easeInOut' }}
+                className="overflow-hidden"
+              >
+                <div className="px-4 pb-4 border-t border-slate-700/40 pt-3">
+                  <div className="overflow-x-auto rounded-lg border border-slate-700/40">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="bg-slate-800/60">
+                          <th className="text-left px-3 py-2 text-slate-400 font-semibold">Ingredient</th>
+                          <th className="text-right px-3 py-2 text-slate-400 font-semibold">Qty</th>
+                          <th className="text-right px-3 py-2 text-slate-400 font-semibold">Cal</th>
+                          <th className="text-right px-3 py-2 text-blue-400 font-semibold">P</th>
+                          <th className="text-right px-3 py-2 text-amber-400 font-semibold">C</th>
+                          <th className="text-right px-3 py-2 text-rose-400 font-semibold">F</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {alt.ingredients.map((ing, j) => (
+                          <tr key={j} className="border-t border-slate-700/30 hover:bg-slate-800/20">
+                            <td className="px-3 py-2 text-slate-300">{ing.name}</td>
+                            <td className="px-3 py-2 text-slate-400 text-right">{ing.quantity}</td>
+                            <td className="px-3 py-2 text-slate-300 font-medium text-right">{ing.calories}</td>
+                            <td className="px-3 py-2 text-blue-400 text-right">{ing.protein}g</td>
+                            <td className="px-3 py-2 text-amber-400 text-right">{ing.carbs}g</td>
+                            <td className="px-3 py-2 text-rose-400 text-right">{ing.fat}g</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export function MealCard({ meal, index }: { meal: Meal; index: number }) {
   const [open, setOpen] = useState(index === 0)
 
@@ -77,32 +161,7 @@ export function MealCard({ meal, index }: { meal: Meal; index: number }) {
                 )}
 
                 {meal.alternates && meal.alternates.length > 0 && (
-                  <div className="flex flex-col gap-2">
-                    <div className="text-xs font-semibold uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                      <span className="h-px flex-1 bg-slate-700/60" />
-                      Flex Swaps
-                      <span className="h-px flex-1 bg-slate-700/60" />
-                    </div>
-                    {meal.alternates.map((alt, i) => (
-                      <div key={i} className="flex items-start justify-between gap-3 px-3 py-2.5 rounded-xl bg-slate-900/40 border border-slate-700/40 hover:border-emerald-500/20 transition-colors">
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-xs font-semibold text-slate-400">Option {i + 1}</span>
-                          <span className="text-sm text-slate-300">{alt.name || alt.foods}</span>
-                          {alt.name && alt.foods && alt.name !== alt.foods && (
-                            <span className="text-xs text-slate-500">{alt.foods}</span>
-                          )}
-                        </div>
-                        <div className="flex flex-col items-end gap-0.5 flex-shrink-0 text-xs">
-                          <span className="text-slate-300 font-bold">{alt.kcal} <span className="text-slate-600 font-normal">kcal</span></span>
-                          <div className="flex gap-2">
-                            <span className="text-blue-400">{alt.protein}g P</span>
-                            <span className="text-amber-400">{alt.carbs}g C</span>
-                            <span className="text-rose-400">{alt.fat}g F</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <FlexSwapsSection alternates={meal.alternates} />
                 )}
               </div>
             </motion.div>
