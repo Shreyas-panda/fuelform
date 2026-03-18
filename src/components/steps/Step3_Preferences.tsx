@@ -1,6 +1,6 @@
 import { useState, KeyboardEvent } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Zap, X } from 'lucide-react'
+import { ArrowLeft, Info, Zap, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Select } from '@/components/ui/Select'
@@ -23,7 +23,7 @@ const CUISINE_OPTIONS: { value: CuisineType; label: string }[] = [
   { value: 'mixed', label: 'Mixed / No Preference' },
 ]
 
-const MEALS_OPTIONS = [3, 4, 5, 6] as const
+const MEALS_OPTIONS = [1, 2, 3, 4, 5, 6] as const
 
 function TagInput({
   label,
@@ -83,19 +83,42 @@ function TagInput({
   )
 }
 
+function InfoTooltip({ text }: { text: string }) {
+  const [visible, setVisible] = useState(false)
+  return (
+    <div className="relative inline-block">
+      <button
+        onClick={() => setVisible((v) => !v)}
+        onMouseEnter={() => setVisible(true)}
+        onMouseLeave={() => setVisible(false)}
+        className="text-slate-500 hover:text-emerald-400 transition-colors"
+      >
+        <Info className="h-4 w-4" />
+      </button>
+      {visible && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-60 p-3 rounded-xl bg-slate-700 border border-slate-600 text-xs text-slate-300 shadow-xl z-50 leading-relaxed">
+          {text}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-700" />
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function Step3_Preferences() {
   const { generatePlan, prevStep, setPreferences } = useDietStore()
 
   const [dietType, setDietType] = useState<DietType>('non-vegetarian')
   const [cuisine, setCuisine] = useState<CuisineType>('mixed')
-  const [mealsPerDay, setMealsPerDay] = useState<3 | 4 | 5 | 6>(4)
+  const [mealsPerDay, setMealsPerDay] = useState<1 | 2 | 3 | 4 | 5 | 6>(3)
+  const [flexMeals, setFlexMeals] = useState(1)
   const [allergies, setAllergies] = useState<string[]>([])
   const [dislikedFoods, setDislikedFoods] = useState<string[]>([])
   const [includeSupplements, setIncludeSupplements] = useState(true)
   const [loading, setLoading] = useState(false)
 
   async function handleGenerate() {
-    setPreferences({ dietType, cuisineType: cuisine, allergies, dislikedFoods, mealsPerDay, includeSupplements })
+    setPreferences({ dietType, cuisineType: cuisine, allergies, dislikedFoods, mealsPerDay, includeSupplements, flexMeals })
     setLoading(true)
     await generatePlan()
     setLoading(false)
@@ -163,6 +186,37 @@ export function Step3_Preferences() {
               </button>
             ))}
           </div>
+          {mealsPerDay <= 2 && (
+            <div className="flex items-start gap-2.5 px-3 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs">
+              <span className="text-base leading-none">⚡</span>
+              <span>Intermittent fasting mode — your entire daily nutrition will be packed into {mealsPerDay} meal{mealsPerDay === 1 ? '' : 's'} with larger, calorie-dense portions.</span>
+            </div>
+          )}
+        </div>
+
+        {/* Flex Swaps */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-slate-300">Flex Swaps</label>
+            <InfoTooltip text="Get backup meal options for each slot — perfect when you're tired of the same food, missing an ingredient, or eating out. Each swap matches your cuisine and macro targets." />
+          </div>
+          <div className="flex gap-2">
+            {[0, 1, 2, 3].map((n) => (
+              <button
+                key={n}
+                onClick={() => setFlexMeals(n)}
+                className={clsx(
+                  'flex-1 py-2.5 rounded-xl border text-sm font-bold transition-all duration-200',
+                  flexMeals === n
+                    ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400'
+                    : 'border-slate-700 bg-slate-800/40 text-slate-400 hover:border-slate-600',
+                )}
+              >
+                {n === 0 ? 'None' : `${n}`}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-slate-600">Alternate meal options per slot (0 = no alternates)</p>
         </div>
 
         <TagInput

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Printer, RefreshCw, Pill, Lightbulb, CalendarDays, Droplets, Utensils, Dumbbell } from 'lucide-react'
+import { Printer, RefreshCw, Pill, Lightbulb, CalendarDays, Droplets, Utensils, Dumbbell, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
@@ -7,6 +7,7 @@ import { MacroSummary } from './MacroSummary'
 import { MealCard } from './MealCard'
 import { WorkoutDisplay } from './WorkoutDisplay'
 import { MonthlyPlanDisplay } from './MonthlyPlanDisplay'
+import { GoalTracker } from '@/components/tracker/GoalTracker'
 import { useDietStore } from '@/store/useDietStore'
 import { clsx } from 'clsx'
 import type { DietPlan, ResultTab } from '@/types'
@@ -157,6 +158,7 @@ const TABS: { id: ResultTab; label: string; icon: React.ReactNode }[] = [
   { id: 'diet', label: 'Diet Plan', icon: <Utensils className="h-4 w-4" /> },
   { id: 'workout', label: 'Workout Plan', icon: <Dumbbell className="h-4 w-4" /> },
   { id: 'monthly', label: 'Monthly Plan', icon: <CalendarDays className="h-4 w-4" /> },
+  { id: 'tracker', label: 'Goal Tracker', icon: <CheckCircle2 className="h-4 w-4" /> },
 ]
 
 export function ResultsPage() {
@@ -324,6 +326,17 @@ export function ResultsPage() {
           transition={{ duration: 0.4 }}
         >
           <MonthlyPlanDisplay />
+        </motion.div>
+      )}
+
+      {resultTab === 'tracker' && (
+        <motion.div
+          key="tracker"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <GoalTracker />
         </motion.div>
       )}
 

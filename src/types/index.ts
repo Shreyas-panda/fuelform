@@ -34,8 +34,9 @@ export interface FoodPreferences {
   cuisineType: CuisineType
   allergies: string[]
   dislikedFoods: string[]
-  mealsPerDay: 3 | 4 | 5 | 6
+  mealsPerDay: 1 | 2 | 3 | 4 | 5 | 6
   includeSupplements: boolean
+  flexMeals: number
 }
 
 export interface UserGoal {
@@ -54,6 +55,15 @@ export interface Ingredient {
   fat: number
 }
 
+export interface AlternateMeal {
+  name: string
+  foods: string
+  kcal: number
+  protein: number
+  carbs: number
+  fat: number
+}
+
 export interface Meal {
   id: string
   name: string
@@ -64,6 +74,7 @@ export interface Meal {
   totalProtein: number
   totalCarbs: number
   totalFat: number
+  alternates?: AlternateMeal[]
 }
 
 export interface DailyMacros {
@@ -163,4 +174,4 @@ export interface MonthlyPlan {
 export type WizardStep = 1 | 2 | 3 | 4
 export type AppStatus = 'idle' | 'generating' | 'success' | 'error'
 export type AppView = 'hero' | 'wizard' | 'results' | 'learn'
-export type ResultTab = 'diet' | 'workout' | 'monthly'
+export type ResultTab = 'diet' | 'workout' | 'monthly' | 'tracker'

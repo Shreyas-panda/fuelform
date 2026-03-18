@@ -60,7 +60,11 @@ DIET CONSTRAINTS:
 - Number of meals per day: ${prefs.mealsPerDay}
 - Include supplement recommendations: ${prefs.includeSupplements ? 'Yes' : 'No'}
 
+${prefs.mealsPerDay <= 2 ? `INTERMITTENT FASTING PROTOCOL: This athlete is following intermittent fasting with only ${prefs.mealsPerDay} meal(s) per day. ALL daily nutrition targets must be achieved within these ${prefs.mealsPerDay} meal(s). Use larger, calorie-dense portions and nutrient-dense ingredients. Do NOT suggest small snacks — every meal must be substantial.` : ''}
+
 ${CUISINE_GUIDANCE[prefs.cuisineType]}
+
+${prefs.flexMeals > 0 ? `FLEX SWAPS: For each meal, provide exactly ${prefs.flexMeals} alternate meal option(s) in the "alternates" array. Each alternate must: use the SAME cuisine, meet similar macro targets (±15%), and be a completely different meal (different ingredients/dish).` : ''}
 
 REQUIREMENTS:
 - Every ingredient must have exact quantity in grams (or ml for liquids, or count for whole items like eggs — always include gram equivalent in parentheses e.g. "2 whole (100g)")
@@ -98,7 +102,8 @@ Return this exact JSON structure:
       "totalCalories": <sum of ingredient calories>,
       "totalProtein": <sum>,
       "totalCarbs": <sum>,
-      "totalFat": <sum>
+      "totalFat": <sum>,
+      "alternates": ${prefs.flexMeals > 0 ? `[${Array.from({ length: prefs.flexMeals }, (_, i) => `{"name": "Alternative ${i + 1}", "foods": "Brief description of alternate meal using same cuisine", "kcal": <number>, "protein": <number>, "carbs": <number>, "fat": <number>}`).join(', ')}]` : '[]'}
     }
   ],
   "supplementStack": ${prefs.includeSupplements ? '["Whey protein 30g post-workout", "Creatine monohydrate 5g daily"]' : '[]'},

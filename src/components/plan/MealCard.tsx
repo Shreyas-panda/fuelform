@@ -75,6 +75,35 @@ export function MealCard({ meal, index }: { meal: Meal; index: number }) {
                     <p className="text-slate-400 text-sm leading-relaxed">{meal.preparationNotes}</p>
                   </div>
                 )}
+
+                {meal.alternates && meal.alternates.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <div className="text-xs font-semibold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                      <span className="h-px flex-1 bg-slate-700/60" />
+                      Flex Swaps
+                      <span className="h-px flex-1 bg-slate-700/60" />
+                    </div>
+                    {meal.alternates.map((alt, i) => (
+                      <div key={i} className="flex items-start justify-between gap-3 px-3 py-2.5 rounded-xl bg-slate-900/40 border border-slate-700/40 hover:border-emerald-500/20 transition-colors">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-xs font-semibold text-slate-400">Option {i + 1}</span>
+                          <span className="text-sm text-slate-300">{alt.name || alt.foods}</span>
+                          {alt.name && alt.foods && alt.name !== alt.foods && (
+                            <span className="text-xs text-slate-500">{alt.foods}</span>
+                          )}
+                        </div>
+                        <div className="flex flex-col items-end gap-0.5 flex-shrink-0 text-xs">
+                          <span className="text-slate-300 font-bold">{alt.kcal} <span className="text-slate-600 font-normal">kcal</span></span>
+                          <div className="flex gap-2">
+                            <span className="text-blue-400">{alt.protein}g P</span>
+                            <span className="text-amber-400">{alt.carbs}g C</span>
+                            <span className="text-rose-400">{alt.fat}g F</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
