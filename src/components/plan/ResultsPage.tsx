@@ -207,6 +207,26 @@ export function ResultsPage() {
         </div>
       </Card>
 
+      {/* ── Flow guide ───────────────────────────────────────────────── */}
+      <div className="flex flex-col gap-2 px-4 py-3 rounded-2xl bg-slate-900/40 border border-slate-800/50 print:hidden">
+        <p className="text-slate-500 text-xs font-semibold uppercase tracking-widest">Suggested order</p>
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          {[
+            { num: '1', label: 'Read Diet Plan', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' },
+            { num: '2', label: 'Generate Workout', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' },
+            { num: '3', label: 'Get Monthly Rotation', color: 'text-violet-400 bg-violet-500/10 border-violet-500/20' },
+            { num: '4', label: 'Track Daily Progress', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' },
+          ].map((step, i, arr) => (
+            <div key={step.num} className="flex items-center gap-2">
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-semibold ${step.color}`}>
+                <span className="opacity-60">{step.num}.</span> {step.label}
+              </span>
+              {i < arr.length - 1 && <span className="text-slate-700">→</span>}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* ── Tab switcher ─────────────────────────────────────────────── */}
       <div className="flex gap-1 p-1 rounded-2xl bg-slate-900/60 border border-slate-800/60 print:hidden">
         {TABS.map((tab) => (
