@@ -187,7 +187,7 @@ function SectionHeader({ tag, title, subtitle }: { tag: string; title: string; s
   return (
     <div className="text-center mb-10">
       <p className="text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-2">{tag}</p>
-      <h2 className="text-3xl font-black text-slate-100 mb-3">{title}</h2>
+      <h2 className="text-2xl sm:text-3xl font-black text-slate-100 mb-3">{title}</h2>
       {subtitle && <p className="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed">{subtitle}</p>}
     </div>
   )
@@ -207,26 +207,27 @@ export function LearnPage() {
       </div>
 
       {/* Sticky nav */}
-      <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/60">
-        <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-            <Dumbbell className="h-5 w-5 text-emerald-400" />
+      <header className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/60">
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+          <div className="p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex-shrink-0">
+            <Dumbbell className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-400" />
           </div>
-          <span className="text-lg font-bold text-slate-100 tracking-tight">
+          <span className="text-base sm:text-lg font-bold text-slate-100 tracking-tight">
             Fuel<span className="text-emerald-400">Form</span>
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={() => setAppView('hero')}>
-            <ArrowLeft className="h-4 w-4" /> Back
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Button variant="ghost" size="sm" onClick={() => setAppView('hero')} className="min-h-[44px] px-3">
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden xs:inline sm:inline">Back</span>
           </Button>
-          <Button size="sm" onClick={() => setAppView('wizard')}>
+          <Button size="sm" onClick={() => setAppView('wizard')} className="min-h-[44px] px-3 sm:px-4 whitespace-nowrap">
             Build My Plan
           </Button>
         </div>
       </header>
 
-      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-16 flex flex-col gap-24">
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16 flex flex-col gap-16 sm:gap-24">
 
         {/* Page intro */}
         <motion.div
@@ -239,13 +240,13 @@ export function LearnPage() {
             <Info className="h-3.5 w-3.5" />
             No jargon — plain English
           </div>
-          <h1 className="text-4xl sm:text-5xl font-black text-slate-100 mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-100 mb-4">
             Understand Your{' '}
             <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
               Fitness Numbers
             </span>
           </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
             FuelForm uses science-backed formulas to build your plan. Here's exactly what each concept means and why it matters for your results.
           </p>
         </motion.div>
@@ -375,9 +376,12 @@ export function LearnPage() {
                 <span className="text-emerald-500 font-bold w-4 flex-shrink-0">1.</span>
                 <span className="text-slate-300">Calculate <strong className="text-slate-100">BMR</strong> using the Mifflin-St Jeor formula — the most accurate equation for most people.</span>
               </div>
-              <div className="pl-7 font-mono text-xs text-slate-500">
-                Male: (10 × kg) + (6.25 × cm) − (5 × age) + 5<br />
-                Female: (10 × kg) + (6.25 × cm) − (5 × age) − 161
+              {/* Scrollable formula block to prevent overflow on narrow screens */}
+              <div className="overflow-x-auto">
+                <div className="pl-7 font-mono text-xs text-slate-500 whitespace-nowrap">
+                  Male: (10 × kg) + (6.25 × cm) − (5 × age) + 5<br />
+                  Female: (10 × kg) + (6.25 × cm) − (5 × age) − 161
+                </div>
               </div>
               <div className="flex items-start gap-3 mt-1">
                 <span className="text-emerald-500 font-bold w-4 flex-shrink-0">2.</span>
@@ -413,22 +417,22 @@ export function LearnPage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.4 }}
               >
-                <Card spotlight className={`p-6 border ${macro.border}`}>
+                <Card spotlight className={`p-5 sm:p-6 border ${macro.border}`}>
                   <div className="flex flex-col sm:flex-row gap-5">
                     {/* Left: name + bar */}
-                    <div className="sm:w-36 flex-shrink-0 flex flex-col gap-3">
-                      <div className={`p-2.5 rounded-xl ${macro.bg} border ${macro.border} w-fit ${macro.color}`}>
+                    <div className="flex flex-row sm:flex-col sm:w-36 flex-shrink-0 gap-3 sm:gap-3">
+                      <div className={`p-2.5 rounded-xl ${macro.bg} border ${macro.border} w-fit ${macro.color} flex-shrink-0`}>
                         {macro.icon}
                       </div>
-                      <div>
+                      <div className="flex-1 sm:flex-none">
                         <div className={`font-black text-lg ${macro.color}`}>{macro.name}</div>
                         <div className="text-slate-500 text-xs">{macro.cal}</div>
+                        {/* Mini bar */}
+                        <div className="h-1.5 rounded-full bg-slate-700/60 overflow-hidden mt-2">
+                          <div className={`h-full rounded-full ${macro.bar}`} style={{ width: `${macro.pct}%` }} />
+                        </div>
+                        <span className="text-slate-500 text-xs">~{macro.pct}% of calories</span>
                       </div>
-                      {/* Mini bar */}
-                      <div className="h-1.5 rounded-full bg-slate-700/60 overflow-hidden">
-                        <div className={`h-full rounded-full ${macro.bar}`} style={{ width: `${macro.pct}%` }} />
-                      </div>
-                      <span className="text-slate-500 text-xs">~{macro.pct}% of calories</span>
                     </div>
 
                     {/* Right: details */}
@@ -482,7 +486,7 @@ export function LearnPage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.4 }}
               >
-                <Card spotlight className={`p-6 border ${goal.border} ${goal.bg}`}>
+                <Card spotlight className={`p-5 sm:p-6 border ${goal.border} ${goal.bg}`}>
                   <div className="flex items-start gap-4 mb-4">
                     <div className={`p-2.5 rounded-xl bg-slate-800 border ${goal.border} ${goal.color} flex-shrink-0`}>
                       {goal.icon}
@@ -543,11 +547,12 @@ export function LearnPage() {
               >
                 <Card spotlight className="p-5">
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-24 text-right">
-                      <div className="text-emerald-400 font-black text-lg font-mono">{level.multiplier}</div>
-                      <div className="text-slate-100 font-bold text-sm">{level.label}</div>
+                    {/* Fixed label column — slightly narrower to give desc more room on mobile */}
+                    <div className="flex-shrink-0 w-20 sm:w-24 text-right">
+                      <div className="text-emerald-400 font-black text-base sm:text-lg font-mono leading-tight">{level.multiplier}</div>
+                      <div className="text-slate-100 font-bold text-xs sm:text-sm leading-tight mt-0.5">{level.label}</div>
                     </div>
-                    <div className="flex-1 border-l border-slate-700/60 pl-4">
+                    <div className="flex-1 min-w-0 border-l border-slate-700/60 pl-4">
                       <p className="text-slate-300 text-sm mb-1.5">{level.desc}</p>
                       <p className="text-slate-600 text-xs italic">e.g. {level.example}</p>
                     </div>
@@ -572,9 +577,9 @@ export function LearnPage() {
           transition={{ duration: 0.5 }}
           className="text-center py-8 border-t border-slate-800/60"
         >
-          <h3 className="text-2xl font-black text-slate-100 mb-3">Ready to Build Your Plan?</h3>
+          <h3 className="text-xl sm:text-2xl font-black text-slate-100 mb-3">Ready to Build Your Plan?</h3>
           <p className="text-slate-400 text-sm mb-6">Now that you understand the numbers, let FuelForm do the maths for you.</p>
-          <Button size="lg" onClick={() => setAppView('wizard')} className="shadow-xl shadow-emerald-500/20">
+          <Button size="lg" onClick={() => setAppView('wizard')} className="shadow-xl shadow-emerald-500/20 w-full sm:w-auto min-h-[52px]">
             Build My Free Plan <Activity className="h-5 w-5" />
           </Button>
         </motion.div>

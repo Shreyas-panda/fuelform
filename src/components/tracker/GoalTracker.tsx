@@ -278,7 +278,7 @@ export function GoalTracker() {
                   key={meal.id}
                   onClick={() => toggleMeal(meal.id)}
                   className={clsx(
-                    'flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 text-left w-full',
+                    'flex items-center gap-3 px-3 py-3 min-h-[52px] rounded-xl border transition-all duration-200 text-left w-full',
                     done ? 'border-emerald-500/30 bg-emerald-500/8' : 'border-slate-700/60 bg-slate-900/40 hover:border-slate-600',
                   )}
                 >
@@ -286,8 +286,8 @@ export function GoalTracker() {
                     ? <CheckCircle2 className="h-5 w-5 text-emerald-400 flex-shrink-0" />
                     : <Circle className="h-5 w-5 text-slate-600 flex-shrink-0" />}
                   <div className="flex-1 min-w-0">
-                    <div className={clsx('text-sm font-semibold', done ? 'line-through text-slate-500' : 'text-slate-200')}>{meal.name}</div>
-                    <div className="text-xs text-slate-500">{meal.time} · {meal.totalCalories} kcal · {meal.totalProtein}g protein</div>
+                    <div className={clsx('text-sm font-semibold truncate', done ? 'line-through text-slate-500' : 'text-slate-200')}>{meal.name}</div>
+                    <div className="text-xs text-slate-500 truncate">{meal.time} · {meal.totalCalories} kcal · {meal.totalProtein}g protein</div>
                   </div>
                 </button>
               )
@@ -307,7 +307,7 @@ export function GoalTracker() {
                     key={key}
                     onClick={() => toggleExercise(key)}
                     className={clsx(
-                      'flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 text-left w-full',
+                      'flex items-center gap-3 px-3 py-3 min-h-[52px] rounded-xl border transition-all duration-200 text-left w-full',
                       done ? 'border-blue-500/30 bg-blue-500/5' : 'border-slate-700/60 bg-slate-900/40 hover:border-slate-600',
                     )}
                   >
@@ -315,8 +315,8 @@ export function GoalTracker() {
                       ? <CheckCircle2 className="h-5 w-5 text-blue-400 flex-shrink-0" />
                       : <Circle className="h-5 w-5 text-slate-600 flex-shrink-0" />}
                     <div className="flex-1 min-w-0">
-                      <div className={clsx('text-sm font-semibold', done ? 'line-through text-slate-500' : 'text-slate-200')}>{ex.name}</div>
-                      <div className="text-xs text-slate-500">{ex.sets} sets × {ex.reps} · {ex.muscleGroup}</div>
+                      <div className={clsx('text-sm font-semibold truncate', done ? 'line-through text-slate-500' : 'text-slate-200')}>{ex.name}</div>
+                      <div className="text-xs text-slate-500 truncate">{ex.sets} sets × {ex.reps} · {ex.muscleGroup}</div>
                     </div>
                   </button>
                 )
@@ -335,20 +335,20 @@ export function GoalTracker() {
       {view === 'weekly' && (
         <div className="flex flex-col gap-4">
           {/* Weekly summary stats */}
-          <div className="grid grid-cols-3 gap-3">
-            <Card className="p-4 text-center">
-              <div className="text-2xl font-black text-emerald-400">{weeklyMealsCompleted}</div>
-              <div className="text-xs text-slate-500 mt-0.5">Meals this week</div>
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            <Card className="p-3 sm:p-4 text-center">
+              <div className="text-xl sm:text-2xl font-black text-emerald-400">{weeklyMealsCompleted}</div>
+              <div className="text-xs text-slate-500 mt-0.5 leading-tight">Meals</div>
               <div className="text-xs text-slate-600 mt-0.5">of {weeklyMealsTotal}</div>
             </Card>
-            <Card className="p-4 text-center">
-              <div className="text-2xl font-black text-amber-400">{streak}</div>
-              <div className="text-xs text-slate-500 mt-0.5">Day streak</div>
+            <Card className="p-3 sm:p-4 text-center">
+              <div className="text-xl sm:text-2xl font-black text-amber-400">{streak}</div>
+              <div className="text-xs text-slate-500 mt-0.5 leading-tight">Streak</div>
               <div className="text-xs text-slate-600 mt-0.5">100% days</div>
             </Card>
-            <Card className="p-4 text-center">
-              <div className="text-2xl font-black text-blue-400">{weekDays.filter((d) => d.pct > 0).length}</div>
-              <div className="text-xs text-slate-500 mt-0.5">Active days</div>
+            <Card className="p-3 sm:p-4 text-center">
+              <div className="text-xl sm:text-2xl font-black text-blue-400">{weekDays.filter((d) => d.pct > 0).length}</div>
+              <div className="text-xs text-slate-500 mt-0.5 leading-tight">Active</div>
               <div className="text-xs text-slate-600 mt-0.5">this week</div>
             </Card>
           </div>
@@ -365,17 +365,17 @@ export function GoalTracker() {
                 <div key={day.key} className={clsx('rounded-xl border overflow-hidden transition-colors', day.isToday ? 'border-emerald-500/30' : 'border-slate-700/50')}>
                   <button
                     onClick={() => setExpandedDay(isExpanded ? null : day.key)}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-800/30 transition-colors text-left"
+                    className="w-full flex items-center gap-3 px-4 py-3 min-h-[52px] hover:bg-slate-800/30 transition-colors text-left"
                   >
                     <div className="relative flex-shrink-0">
                       <ProgressRing pct={day.pct} size={36} stroke={3} />
                       <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-300" style={{ fontSize: '9px' }}>{day.pct}%</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <span className={clsx('text-sm font-semibold', day.isToday ? 'text-emerald-400' : 'text-slate-200')}>{day.label}</span>
-                        {day.pct === 100 && <span className="text-base">✅</span>}
-                        {day.isToday && <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-semibold">Today</span>}
+                        {day.pct === 100 && <span className="text-sm leading-none">✅</span>}
+                        {day.isToday && <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-semibold flex-shrink-0">Today</span>}
                       </div>
                       <div className="text-xs text-slate-500">{day.mealsCompleted}/{day.mealsTotal} meals completed</div>
                     </div>
@@ -400,7 +400,7 @@ export function GoalTracker() {
                                 key={meal.id}
                                 onClick={() => toggleWeekMeal(day.key, meal.id)}
                                 className={clsx(
-                                  'flex items-center gap-3 p-2.5 rounded-lg border transition-all duration-150 text-left w-full',
+                                  'flex items-center gap-3 px-2.5 py-2.5 min-h-[44px] rounded-lg border transition-all duration-150 text-left w-full',
                                   done ? 'border-emerald-500/25 bg-emerald-500/6' : 'border-slate-700/40 bg-slate-900/30 hover:border-slate-600',
                                 )}
                               >
@@ -408,8 +408,8 @@ export function GoalTracker() {
                                   ? <CheckCircle2 className="h-4 w-4 text-emerald-400 flex-shrink-0" />
                                   : <Circle className="h-4 w-4 text-slate-600 flex-shrink-0" />}
                                 <div className="flex-1 min-w-0">
-                                  <div className={clsx('text-xs font-semibold', done ? 'line-through text-slate-500' : 'text-slate-300')}>{meal.name}</div>
-                                  <div className="text-xs text-slate-600">{meal.time} · {meal.totalCalories} kcal</div>
+                                  <div className={clsx('text-xs font-semibold truncate', done ? 'line-through text-slate-500' : 'text-slate-300')}>{meal.name}</div>
+                                  <div className="text-xs text-slate-600 truncate">{meal.time} · {meal.totalCalories} kcal</div>
                                 </div>
                               </button>
                             )

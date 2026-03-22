@@ -104,17 +104,17 @@ export function MacroSummary({ macros }: { macros: DailyMacros }) {
         {/* Macro rows */}
         <div className="flex-1 w-full flex flex-col gap-2.5">
           {macroRows.map((m) => (
-            <div key={m.label} className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${m.border} ${m.bg}`}>
+            <div key={m.label} className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border ${m.border} ${m.bg}`}>
               <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: m.dot }} />
-              <div className={`text-sm font-bold ${m.text} w-14 flex-shrink-0`}>{m.label}</div>
-              <div className="flex-1 h-1.5 rounded-full bg-slate-800/80">
+              <div className={`text-xs sm:text-sm font-bold ${m.text} w-12 sm:w-14 flex-shrink-0`}>{m.label}</div>
+              <div className="flex-1 h-1.5 rounded-full bg-slate-800/80 min-w-0">
                 <div
                   className={`h-full rounded-full ${m.color} transition-all duration-700`}
                   style={{ width: `${m.pct}%` }}
                 />
               </div>
-              <div className="text-slate-200 font-bold text-sm w-12 text-right flex-shrink-0">{m.value}g</div>
-              <div className="text-slate-500 text-xs w-9 text-right flex-shrink-0">{m.pct}%</div>
+              <div className="text-slate-200 font-bold text-xs sm:text-sm w-10 sm:w-12 text-right flex-shrink-0">{m.value}g</div>
+              <div className="text-slate-500 text-xs w-8 sm:w-9 text-right flex-shrink-0">{m.pct}%</div>
             </div>
           ))}
 

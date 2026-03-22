@@ -137,7 +137,7 @@ export function Step3_Preferences() {
         <p className="text-slate-400 text-sm">Tell us what you like — we'll build around it.</p>
       </div>
 
-      <Card className="p-6 flex flex-col gap-6">
+      <Card className="p-4 sm:p-6 flex flex-col gap-6">
         {/* Diet type selector */}
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-slate-300">Diet Type</label>
@@ -147,7 +147,7 @@ export function Step3_Preferences() {
                 key={d.value}
                 onClick={() => setDietType(d.value)}
                 className={clsx(
-                  'flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border text-sm font-medium transition-all duration-200',
+                  'flex flex-col items-center gap-1.5 min-h-[56px] py-3 px-2 rounded-xl border text-sm font-medium transition-all duration-200',
                   dietType === d.value
                     ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400 shadow-lg shadow-emerald-500/10'
                     : 'border-slate-700 bg-slate-800/40 text-slate-400 hover:border-slate-600',
@@ -170,13 +170,13 @@ export function Step3_Preferences() {
         {/* Meals per day */}
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-slate-300">Meals per Day</label>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5 sm:gap-2">
             {MEALS_OPTIONS.map((n) => (
               <button
                 key={n}
                 onClick={() => setMealsPerDay(n)}
                 className={clsx(
-                  'flex-1 py-2.5 rounded-xl border text-sm font-bold transition-all duration-200',
+                  'flex-1 min-h-[44px] py-2 sm:py-2.5 rounded-xl border text-sm font-bold transition-all duration-200',
                   mealsPerDay === n
                     ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400'
                     : 'border-slate-700 bg-slate-800/40 text-slate-400 hover:border-slate-600',
@@ -200,13 +200,13 @@ export function Step3_Preferences() {
             <label className="text-sm font-medium text-slate-300">Flex Swaps</label>
             <InfoTooltip text="Get backup meal options for each slot — perfect when you're tired of the same food, missing an ingredient, or eating out. Each swap matches your cuisine and macro targets." />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5 sm:gap-2">
             {[0, 1, 2, 3].map((n) => (
               <button
                 key={n}
                 onClick={() => setFlexMeals(n)}
                 className={clsx(
-                  'flex-1 py-2.5 rounded-xl border text-sm font-bold transition-all duration-200',
+                  'flex-1 min-h-[44px] py-2 sm:py-2.5 rounded-xl border text-sm font-bold transition-all duration-200',
                   flexMeals === n
                     ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400'
                     : 'border-slate-700 bg-slate-800/40 text-slate-400 hover:border-slate-600',
@@ -234,8 +234,8 @@ export function Step3_Preferences() {
         />
 
         {/* Supplements toggle */}
-        <div className="flex items-center justify-between py-3 px-4 rounded-xl bg-slate-900/60 border border-slate-700/60">
-          <div>
+        <div className="flex items-center justify-between gap-3 py-3 px-4 rounded-xl bg-slate-900/60 border border-slate-700/60">
+          <div className="min-w-0">
             <div className="text-slate-200 text-sm font-medium">Include Supplement Recommendations</div>
             <div className="text-slate-500 text-xs mt-0.5">Whey protein, creatine, vitamins etc.</div>
           </div>
@@ -259,10 +259,10 @@ export function Step3_Preferences() {
       </Card>
 
       <div className="flex gap-3">
-        <Button variant="secondary" onClick={prevStep} disabled={loading}>
+        <Button variant="secondary" onClick={prevStep} disabled={loading} className="min-w-[80px]">
           <ArrowLeft className="h-4 w-4" /> Back
         </Button>
-        <Button onClick={handleGenerate} loading={loading} size="lg" className="flex-1">
+        <Button onClick={handleGenerate} loading={loading} size="lg" className="flex-1 min-h-[44px]">
           <Zap className="h-4 w-4" />
           {loading ? 'Generating your plan...' : 'Generate My Diet Plan'}
         </Button>

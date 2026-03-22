@@ -39,11 +39,11 @@ export function Step4_Generating() {
           <h3 className="text-xl font-bold text-slate-100 mb-2">Something went wrong</h3>
           <p className="text-slate-400 text-sm">{errorMessage}</p>
         </div>
-        <div className="flex gap-3">
-          <Button variant="secondary" onClick={prevStep}>
+        <div className="flex flex-col sm:flex-row gap-3 w-full">
+          <Button variant="secondary" onClick={prevStep} className="min-h-[44px]">
             Go Back
           </Button>
-          <Button onClick={() => generatePlan()}>
+          <Button onClick={() => generatePlan()} className="min-h-[44px]">
             <RefreshCw className="h-4 w-4" /> Try Again
           </Button>
         </div>
@@ -58,7 +58,7 @@ export function Step4_Generating() {
       className="flex flex-col items-center gap-8 text-center max-w-sm mx-auto"
     >
       {/* Animated rings */}
-      <div className="relative flex items-center justify-center">
+      <div className="relative flex items-center justify-center w-28 h-28 flex-shrink-0">
         <div className="absolute w-28 h-28 rounded-full border border-emerald-500/10 animate-ping" style={{ animationDuration: '2s' }} />
         <div className="absolute w-20 h-20 rounded-full border border-emerald-500/20 animate-ping" style={{ animationDuration: '2.5s', animationDelay: '0.3s' }} />
         <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
@@ -67,7 +67,7 @@ export function Step4_Generating() {
       </div>
 
       <div>
-        <h3 className="text-2xl font-bold text-slate-100 mb-3">Building Your Plan</h3>
+        <h3 className="text-xl sm:text-2xl font-bold text-slate-100 mb-3">Building Your Plan</h3>
         <AnimatePresence mode="wait">
           <motion.p
             key={msgIndex}

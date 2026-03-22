@@ -97,14 +97,14 @@ export function Step1_BMI() {
         <p className="text-slate-400 text-sm">We calculate your BMI and TDEE to build a plan that actually works.</p>
       </div>
 
-      <Card className="p-6 flex flex-col gap-5">
+      <Card className="p-4 sm:p-6 flex flex-col gap-5">
         {/* Unit toggle */}
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-900/60 border border-slate-700/60 self-start">
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-900/60 border border-slate-700/60 w-full sm:self-start">
           {(['metric', 'imperial'] as Unit[]).map((u) => (
             <button
               key={u}
               onClick={() => setUnit(u)}
-              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 capitalize ${
+              className={`flex-1 sm:flex-none px-4 min-h-[44px] sm:min-h-0 sm:py-1.5 rounded-lg text-sm font-medium transition-all duration-200 capitalize ${
                 unit === u
                   ? 'bg-emerald-500 text-slate-900'
                   : 'text-slate-400 hover:text-slate-200'
@@ -117,7 +117,7 @@ export function Step1_BMI() {
 
         <Input label="Your Name" placeholder="e.g. Alex" value={name} onChange={(e) => handleNameChange(e.target.value)} error={errors.name} />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <Input label="Age" type="number" placeholder="25" value={age} onChange={(e) => setAge(e.target.value)} error={errors.age} />
           <Select
             label="Gender"
@@ -127,7 +127,7 @@ export function Step1_BMI() {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <Input
             label={`Height (${unit === 'metric' ? 'cm' : 'inches'})`}
             type="number"
@@ -167,10 +167,10 @@ export function Step1_BMI() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4 }}
         >
-          <Card className="p-6" spotlight glow selected>
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <div className="text-5xl font-black text-slate-100 mb-1">{bmiResult.bmi}</div>
+          <Card className="p-4 sm:p-6" spotlight glow selected>
+            <div className="flex items-start justify-between mb-4 gap-3">
+              <div className="min-w-0">
+                <div className="text-4xl sm:text-5xl font-black text-slate-100 mb-1">{bmiResult.bmi}</div>
                 <div className="text-slate-400 text-sm">Body Mass Index</div>
               </div>
               <Badge variant={info.badge}>{info.label}</Badge>

@@ -52,7 +52,7 @@ function App() {
               <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-cyan-500/5 blur-3xl" />
             </div>
 
-            <main className="relative z-10 pt-24 pb-16 px-4 sm:px-6">
+            <main className="relative z-10 pt-24 pb-16 px-4 sm:px-6 overflow-x-hidden">
               <ResultsPage />
             </main>
           </motion.div>
@@ -73,12 +73,12 @@ function App() {
               <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-cyan-500/5 blur-3xl" />
             </div>
 
-            <main className="relative z-10 pt-24 pb-16 px-4 sm:px-6">
-              <div className="max-w-3xl mx-auto mb-10">
+            <main className="relative z-10 pt-24 pb-16 px-4 sm:px-6 overflow-x-hidden">
+              <div className="max-w-3xl mx-auto mb-8 sm:mb-10">
                 <StepIndicator current={currentStep} />
               </div>
 
-              <div className="max-w-3xl mx-auto">
+              <div className="max-w-3xl mx-auto w-full">
                 {status === 'generating' || currentStep === 4 ? (
                   <Step4_Generating />
                 ) : currentStep === 1 ? (

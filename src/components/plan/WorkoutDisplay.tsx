@@ -37,7 +37,7 @@ function ExerciseRow({ exercise, index }: { exercise: Exercise; index: number })
     >
       <button
         onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center gap-4 p-4 text-left hover:bg-slate-700/20 transition-colors"
+        className="w-full flex items-center gap-3 p-4 min-h-[56px] text-left hover:bg-slate-700/20 transition-colors"
       >
         <span className="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 text-xs font-bold flex-shrink-0">
           {index + 1}
@@ -50,7 +50,7 @@ function ExerciseRow({ exercise, index }: { exercise: Exercise; index: number })
               {exercise.muscleGroup}
             </Badge>
           </div>
-          <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
+          <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 flex-wrap">
             <span>{exercise.sets} sets × {exercise.reps}</span>
             <span>·</span>
             <span>Rest: {exercise.rest}</span>
@@ -63,13 +63,13 @@ function ExerciseRow({ exercise, index }: { exercise: Exercise; index: number })
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium hover:bg-red-500/20 transition-colors"
+            className="flex items-center justify-center gap-1.5 min-w-[36px] min-h-[36px] px-2.5 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium hover:bg-red-500/20 transition-colors"
           >
             <Play className="h-3 w-3 fill-current" />
             <span className="hidden sm:inline">Watch</span>
           </a>
           <ChevronDown
-            className={clsx('h-4 w-4 text-slate-500 transition-transform duration-300', expanded && 'rotate-180')}
+            className={clsx('h-4 w-4 text-slate-500 transition-transform duration-300 flex-shrink-0', expanded && 'rotate-180')}
           />
         </div>
       </button>
@@ -144,24 +144,24 @@ function WorkoutDayCard({ day, index }: { day: WorkoutDay; index: number }) {
       <Card spotlight className="overflow-hidden">
         <button
           onClick={() => setOpen((v) => !v)}
-          className="w-full flex items-center gap-4 p-5 text-left hover:bg-slate-700/20 transition-colors"
+          className="w-full flex items-center gap-3 sm:gap-4 p-4 sm:p-5 min-h-[56px] text-left hover:bg-slate-700/20 transition-colors"
         >
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-sm flex-shrink-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-sm flex-shrink-0">
             {index + 1}
           </div>
-          <div className="flex-1">
-            <div className="text-slate-100 font-bold">{day.day}</div>
-            <div className="text-slate-400 text-xs mt-0.5 flex items-center gap-1.5">
-              <Clock className="h-3 w-3" />
-              {day.estimatedDuration}
-              <span className="text-slate-600 mx-1">·</span>
-              {day.focus}
+          <div className="flex-1 min-w-0">
+            <div className="text-slate-100 font-bold truncate">{day.day}</div>
+            <div className="text-slate-400 text-xs mt-0.5 flex items-center gap-1.5 flex-wrap">
+              <Clock className="h-3 w-3 flex-shrink-0" />
+              <span>{day.estimatedDuration}</span>
+              <span className="text-slate-600">·</span>
+              <span className="truncate">{day.focus}</span>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-slate-500 text-xs hidden sm:block">{day.exercises.length} exercises</span>
             <ChevronDown
-              className={clsx('h-4 w-4 text-slate-500 transition-transform duration-300', open && 'rotate-180')}
+              className={clsx('h-4 w-4 text-slate-500 transition-transform duration-300 flex-shrink-0', open && 'rotate-180')}
             />
           </div>
         </button>

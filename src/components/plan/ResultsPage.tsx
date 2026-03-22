@@ -180,7 +180,7 @@ export function ResultsPage() {
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div>
             <p className="text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-1">Your Personalised Plan</p>
-            <h2 className="text-3xl font-black text-slate-100 mb-3">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-100 mb-3">
               {userProfile.name}'s{' '}
               <span className="capitalize bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
                 {goal.type}
@@ -196,7 +196,7 @@ export function ResultsPage() {
             </div>
           </div>
 
-          <div className="flex gap-2 print:hidden">
+          <div className="flex flex-row sm:flex-row gap-2 print:hidden flex-shrink-0">
             <Button variant="secondary" size="sm" onClick={() => printDietPlan(dietPlan)}>
               <Printer className="h-4 w-4" /> Print
             </Button>
@@ -217,9 +217,11 @@ export function ResultsPage() {
             { num: '3', label: 'Get Monthly Rotation', color: 'text-violet-400 bg-violet-500/10 border-violet-500/20' },
             { num: '4', label: 'Track Daily Progress', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' },
           ].map((step, i, arr) => (
-            <div key={step.num} className="flex items-center gap-2">
-              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-semibold ${step.color}`}>
-                <span className="opacity-60">{step.num}.</span> {step.label}
+            <div key={step.num} className="flex items-center gap-1.5">
+              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg border font-semibold ${step.color}`}>
+                <span className="opacity-60">{step.num}.</span>
+                <span className="hidden sm:inline">{step.label}</span>
+                <span className="sm:hidden">{step.label.split(' ')[0]}</span>
               </span>
               {i < arr.length - 1 && <span className="text-slate-700">→</span>}
             </div>
@@ -228,13 +230,13 @@ export function ResultsPage() {
       </div>
 
       {/* ── Tab switcher ─────────────────────────────────────────────── */}
-      <div className="flex gap-1 p-1.5 rounded-2xl bg-slate-900/80 border border-slate-800/60 print:hidden overflow-x-auto">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 p-1.5 rounded-2xl bg-slate-900/80 border border-slate-800/60 print:hidden">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setResultTab(tab.id)}
             className={clsx(
-              'flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 whitespace-nowrap min-w-0',
+              'flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 whitespace-nowrap min-h-[44px]',
               resultTab === tab.id
                 ? 'bg-gradient-to-b from-emerald-500 to-emerald-600 text-slate-900 shadow-lg shadow-emerald-500/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60',

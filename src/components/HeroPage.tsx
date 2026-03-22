@@ -1,6 +1,6 @@
-import { useRef, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { ArrowRight, Dumbbell, Flame, Brain, Video, BookOpen } from 'lucide-react'
+import { useRef, useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowRight, Dumbbell, Flame, Brain, Video, BookOpen, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useDietStore } from '@/store/useDietStore'
 
@@ -41,6 +41,7 @@ const NAV_LINKS = [
 
 export function HeroPage() {
   const { setAppView } = useDietStore()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const videoRef = useRef<HTMLVideoElement>(null)
 
@@ -55,6 +56,7 @@ export function HeroPage() {
   function scrollTo(href: string) {
     const el = document.querySelector(href)
     el?.scrollIntoView({ behavior: 'smooth' })
+    setMobileMenuOpen(false)
   }
 
   return (
@@ -85,46 +87,91 @@ export function HeroPage() {
         initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 sm:px-10 py-4 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/50"
+        className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/50"
       >
-        {/* Logo */}
-        <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30">
-            <Dumbbell className="h-5 w-5 text-emerald-400" />
+        <div className="flex items-center justify-between px-4 sm:px-10 py-4">
+          {/* Logo */}
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30">
+              <Dumbbell className="h-5 w-5 text-emerald-400" />
+            </div>
+            <span className="text-xl font-black text-slate-100 tracking-tight">
+              Fuel<span className="text-emerald-400">Form</span>
+            </span>
           </div>
-          <span className="text-xl font-black text-slate-100 tracking-tight">
-            Fuel<span className="text-emerald-400">Form</span>
-          </span>
-        </div>
 
-        {/* Nav links — desktop */}
-        <div className="hidden sm:flex items-center gap-1">
-          {NAV_LINKS.map((link) => (
+          {/* Nav links — desktop (md+) */}
+          <div className="hidden md:flex items-center gap-1">
+            {NAV_LINKS.map((link) => (
+              <button
+                key={link.label}
+                onClick={() => scrollTo(link.href)}
+                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 transition-all duration-200"
+              >
+                {link.label}
+              </button>
+            ))}
             <button
-              key={link.label}
-              onClick={() => scrollTo(link.href)}
-              className="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 transition-all duration-200"
+              onClick={() => setAppView('learn')}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-semibold text-amber-400 border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 transition-all duration-200"
             >
-              {link.label}
+              <BookOpen className="h-3.5 w-3.5" />
+              Learn Basics
             </button>
-          ))}
-          <button
-            onClick={() => setAppView('learn')}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-semibold text-amber-400 border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 transition-all duration-200"
-          >
-            <BookOpen className="h-3.5 w-3.5" />
-            Learn Basics
-          </button>
+          </div>
+
+          {/* Right side: CTA + hamburger */}
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              onClick={() => setAppView('wizard')}
+              className="shadow-lg shadow-emerald-500/20"
+            >
+              Get Started <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+
+            {/* Hamburger — mobile only (hidden md+) */}
+            <button
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all duration-200"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
 
-        {/* CTA button in nav */}
-        <Button
-          size="sm"
-          onClick={() => setAppView('wizard')}
-          className="shadow-lg shadow-emerald-500/20"
-        >
-          Get Started <ArrowRight className="h-3.5 w-3.5" />
-        </Button>
+        {/* Mobile dropdown menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.22, ease: 'easeInOut' }}
+              className="overflow-hidden md:hidden border-t border-slate-800/60 bg-slate-950/95 backdrop-blur-md"
+            >
+              <div className="flex flex-col px-4 py-3 gap-1">
+                {NAV_LINKS.map((link) => (
+                  <button
+                    key={link.label}
+                    onClick={() => scrollTo(link.href)}
+                    className="w-full text-left px-4 py-3 min-h-[44px] rounded-lg text-sm font-medium text-slate-300 hover:text-slate-100 hover:bg-slate-800/50 transition-all duration-200"
+                  >
+                    {link.label}
+                  </button>
+                ))}
+                <button
+                  onClick={() => { setAppView('learn'); setMobileMenuOpen(false) }}
+                  className="w-full flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-lg text-sm font-semibold text-amber-400 border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 transition-all duration-200"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Learn Basics
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.nav>
 
       {/* ── Hero content ──────────────────────────────────────────────── */}
@@ -146,7 +193,7 @@ export function HeroPage() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25 }}
-          className="text-5xl sm:text-7xl font-black text-slate-100 leading-tight mb-6 max-w-4xl"
+          className="text-3xl sm:text-5xl md:text-7xl font-black text-slate-100 leading-tight mb-6 max-w-4xl"
         >
           Your Body.{' '}
           <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
@@ -161,7 +208,7 @@ export function HeroPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-lg sm:text-xl text-slate-400 max-w-2xl mb-10 leading-relaxed"
+          className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mb-10 leading-relaxed"
         >
           Enter your stats and get a personalised{' '}
           <strong className="text-slate-200">bulking or shredding diet</strong> with exact
@@ -174,18 +221,18 @@ export function HeroPage() {
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.55 }}
-          className="flex flex-col sm:flex-row items-center gap-4 mb-20"
+          className="flex flex-col sm:flex-row items-center gap-4 mb-12 sm:mb-20 w-full sm:w-auto"
         >
           <Button
             size="lg"
             onClick={() => setAppView('wizard')}
-            className="px-10 py-4 text-base shadow-2xl shadow-emerald-500/30 hover:scale-105 transition-transform"
+            className="w-full sm:w-auto px-10 py-4 text-base shadow-2xl shadow-emerald-500/30 hover:scale-105 transition-transform min-h-[52px]"
           >
             Build My Plan <ArrowRight className="h-5 w-5" />
           </Button>
           <button
             onClick={() => scrollTo('#how-it-works')}
-            className="text-slate-500 hover:text-slate-300 text-sm transition-colors underline underline-offset-4"
+            className="text-slate-500 hover:text-slate-300 text-sm transition-colors underline underline-offset-4 min-h-[44px] flex items-center"
           >
             See how it works
           </button>
@@ -200,7 +247,7 @@ export function HeroPage() {
         >
           <button
             onClick={() => setAppView('learn')}
-            className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl bg-amber-500/8 border border-amber-500/25 hover:border-amber-500/50 hover:bg-amber-500/12 transition-all duration-300 text-left group"
+            className="w-full flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 rounded-2xl bg-amber-500/8 border border-amber-500/25 hover:border-amber-500/50 hover:bg-amber-500/12 transition-all duration-300 text-left group min-h-[44px]"
           >
             <div className="p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/20 flex-shrink-0">
               <BookOpen className="h-5 w-5 text-amber-400" />
@@ -223,15 +270,15 @@ export function HeroPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7, duration: 0.5 }}
-          className="flex items-center divide-x divide-slate-800 mb-16 text-center"
+          className="flex flex-wrap items-center justify-center gap-x-0 divide-x divide-slate-800 mb-12 sm:mb-16 text-center"
         >
           {[
             { value: '5', label: 'Cuisine Types' },
             { value: '4-Week', label: 'Monthly Plans' },
             { value: '100%', label: 'Free, No Signup' },
           ].map((stat) => (
-            <div key={stat.label} className="flex flex-col items-center px-4 sm:px-6">
-              <div className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">{stat.value}</div>
+            <div key={stat.label} className="flex flex-col items-center px-4 sm:px-6 py-2">
+              <div className="text-xl sm:text-2xl md:text-3xl font-black bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">{stat.value}</div>
               <div className="text-slate-500 text-xs mt-1 font-medium">{stat.label}</div>
             </div>
           ))}
@@ -239,7 +286,7 @@ export function HeroPage() {
       </div>
 
       {/* ── How It Works ─────────────────────────────────────────────── */}
-      <section id="how-it-works" className="relative z-10 bg-slate-950/90 backdrop-blur-sm px-4 sm:px-10 py-20 border-t border-slate-800/60">
+      <section id="how-it-works" className="relative z-10 bg-slate-950/90 backdrop-blur-sm px-4 sm:px-10 py-16 sm:py-20 border-t border-slate-800/60">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -249,12 +296,12 @@ export function HeroPage() {
             className="text-center mb-12"
           >
             <p className="text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-2">Simple Process</p>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-100">How It Works</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-100">How It Works</h2>
           </motion.div>
 
-          <div className="relative grid grid-cols-1 sm:grid-cols-4 gap-6">
+          <div className="relative grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {/* Connecting line on desktop */}
-            <div className="absolute hidden sm:block top-8 left-[15%] right-[15%] h-px bg-gradient-to-r from-emerald-500/10 via-emerald-500/40 to-emerald-500/10 pointer-events-none" />
+            <div className="absolute hidden md:block top-8 left-[15%] right-[15%] h-px bg-gradient-to-r from-emerald-500/10 via-emerald-500/40 to-emerald-500/10 pointer-events-none" />
             {[
               { step: 1, title: 'Enter Your Stats', desc: 'Height, weight, age, gender and activity level.' },
               { step: 2, title: 'Choose Your Goal', desc: 'Bulk, shred, or maintain — we pre-select based on your BMI.' },
@@ -287,7 +334,7 @@ export function HeroPage() {
             transition={{ delay: 0.4, duration: 0.5 }}
             className="flex justify-center mt-10"
           >
-            <Button size="lg" onClick={() => setAppView('wizard')} className="shadow-xl shadow-emerald-500/20">
+            <Button size="lg" onClick={() => setAppView('wizard')} className="shadow-xl shadow-emerald-500/20 w-full sm:w-auto min-h-[52px]">
               Start Now — It's Free <ArrowRight className="h-5 w-5" />
             </Button>
           </motion.div>
@@ -295,7 +342,7 @@ export function HeroPage() {
       </section>
 
       {/* ── Features ─────────────────────────────────────────────────── */}
-      <section id="features" className="relative z-10 bg-slate-950 px-4 sm:px-10 py-20 border-t border-slate-800/60">
+      <section id="features" className="relative z-10 bg-slate-950 px-4 sm:px-10 py-16 sm:py-20 border-t border-slate-800/60">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -305,7 +352,7 @@ export function HeroPage() {
             className="text-center mb-12"
           >
             <p className="text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-2">What You Get</p>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-100">Everything You Need</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-100">Everything You Need</h2>
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -333,15 +380,17 @@ export function HeroPage() {
       </section>
 
       {/* ── Footer ───────────────────────────────────────────────────── */}
-      <footer className="relative z-10 bg-slate-950 border-t border-slate-800/60 px-6 py-10 text-center">
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <div className="p-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30">
-            <Dumbbell className="h-4 w-4 text-emerald-400" />
+      <footer className="relative z-10 bg-slate-950 border-t border-slate-800/60 px-4 sm:px-6 py-10">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <div className="flex items-center justify-center gap-2">
+            <div className="p-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30">
+              <Dumbbell className="h-4 w-4 text-emerald-400" />
+            </div>
+            <span className="text-slate-200 font-black text-lg">Fuel<span className="text-emerald-400">Form</span></span>
           </div>
-          <span className="text-slate-200 font-black text-lg">Fuel<span className="text-emerald-400">Form</span></span>
+          <p className="text-slate-500 text-xs">AI-powered diet &amp; workout planner · Built for gym enthusiasts</p>
+          <p className="text-slate-700 text-xs">Free forever · No signup · No data stored · Powered by Llama 3.3 70B</p>
         </div>
-        <p className="text-slate-500 text-xs mb-1">AI-powered diet & workout planner · Built for gym enthusiasts</p>
-        <p className="text-slate-700 text-xs">Free forever · No signup · No data stored · Powered by Llama 3.3 70B</p>
       </footer>
 
     </div>

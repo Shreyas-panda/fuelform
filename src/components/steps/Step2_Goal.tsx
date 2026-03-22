@@ -136,8 +136,8 @@ export function Step2_Goal() {
       </div>
 
       {/* Optional custom calorie override */}
-      <Card className="p-5">
-        <div className="flex items-center gap-3 mb-3">
+      <Card className="p-4 sm:p-5">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mb-3">
           <span className="text-slate-300 text-sm font-medium">Custom calorie target</span>
           <span className="text-slate-600 text-xs">(optional — leave blank to use defaults)</span>
         </div>
@@ -151,10 +151,10 @@ export function Step2_Goal() {
       </Card>
 
       <div className="flex gap-3">
-        <Button variant="secondary" onClick={prevStep} className="flex-1">
+        <Button variant="secondary" onClick={prevStep} className="flex-1 min-h-[44px]">
           <ArrowLeft className="h-4 w-4" /> Back
         </Button>
-        <Button onClick={handleContinue} className="flex-1" size="lg">
+        <Button onClick={handleContinue} className="flex-1 min-h-[44px]" size="lg">
           Continue <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
