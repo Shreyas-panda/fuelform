@@ -389,7 +389,7 @@ export function HeroPage() {
             <span className="text-slate-200 font-black text-lg">Fuel<span className="text-emerald-400">Form</span></span>
           </div>
           <p className="text-slate-500 text-xs">AI-powered diet &amp; workout planner · Built for gym enthusiasts</p>
-          <p className="text-slate-700 text-xs">Free forever · No signup · No data stored · Powered by Llama 3.3 70B</p>
+          <p className="text-slate-700 text-xs">Free forever · No signup · No data stored</p>
         </div>
       </footer>
 
